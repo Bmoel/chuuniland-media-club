@@ -1,12 +1,12 @@
-import { createTheme, MantineProvider } from "@mantine/core";
+import { Typography } from "@mui/material";
+import AbcIcon from '@mui/icons-material/Abc';
 
 function App() {
-  const theme = createTheme({});
-
   return (
-    <MantineProvider theme={theme}>
-      <p>Testing</p>
-    </MantineProvider>
+    <>
+      <AbcIcon />
+      <Typography>Testing</Typography>
+    </>
   );
 }
 
