@@ -1,6 +1,9 @@
+import { useParams } from "react-router";
+
 function MediaPage() {
+    const { id } = useParams();
     return (
-        <>Media!</>
+        <>{id}</>
     );
 }
 
