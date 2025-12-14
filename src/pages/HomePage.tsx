@@ -29,9 +29,9 @@ function HomePage() {
         <>
             <Box
                 sx={isMobile ? undefined : {
-                    display: 'flex', // Use flexbox for centering
-                    justifyContent: 'center', // Center horizontally
-                    alignItems: 'center', // Center vertically
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
             >
                 <Stack spacing={2}>
