@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import { Box, IconButton, ImageList, ImageListItem, ImageListItemBar, Stack, Typography } from "@mui/material";
 import { Info } from "@mui/icons-material";
-import { MEDIA } from "../constants/media";
-import { useMediaInfoQuery } from "../api/anilist/anilistApi";
 import type { MEDIA_INFO } from "../api/anilist/anilistApi.types";
 import useConfig from "../hooks/useConfig";
 import MediaInfoDrawer from "../components/MediaInfoDrawer";
 import type { MEDIA_INFO_DRAWER } from "../types/mediaInfo.types";
+import useAnilistMediaQuery from "../hooks/useAnilistMediaQuery";
 
 function HomePage() {
     const [mediaInfoDrawer, setMediaInfoDrawer] = useState<MEDIA_INFO_DRAWER>({
@@ -15,11 +14,7 @@ function HomePage() {
     });
 
     const { isMobile } = useConfig();
-
-    const { data } = useMediaInfoQuery({
-        idIn: Object.keys(MEDIA),
-        sort: 'TITLE_ENGLISH',
-    });
+    const { data } = useAnilistMediaQuery();
 
     const mediaList: MEDIA_INFO[] = useMemo(() => {
         return data?.data.Page.media ?? [];

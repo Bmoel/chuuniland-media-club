@@ -1,14 +1,10 @@
 import { useMemo } from "react";
-import { useMediaInfoQuery } from "../api/anilist/anilistApi";
-import { MEDIA } from "../constants/media";
 import { type MEDIA_INFO } from "../api/anilist/anilistApi.types";
+import useAnilistMediaQuery from "./useAnilistMediaQuery";
 
 function useGetMedia(id?: number) {
-    const { data } = useMediaInfoQuery({
-        idIn: Object.keys(MEDIA),
-        sort: 'TITLE_ENGLISH',
-    });
-
+    const { data } = useAnilistMediaQuery();
+    
     const mediaList: MEDIA_INFO[] = useMemo(() => {
             return data?.data.Page.media ?? [];
     }, [data]);
