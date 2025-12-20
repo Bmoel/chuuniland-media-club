@@ -1,2 +1,2 @@
-# chuuniland-media-club
-Documenting our media club's entries in website form
+# chuuniland-media-club UI
+Website to help host our media club's
