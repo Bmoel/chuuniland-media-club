@@ -1,4 +1,4 @@
-use crate::models::client_state::ClientState;
+use crate::models::app::AppState;
 use axum::{
     body::Body,
     extract::State,
@@ -7,7 +7,7 @@ use axum::{
 };
 use serde_json::{json, Value};
 
-pub async fn users_route(State(_state): State<ClientState>) -> Response {
+pub async fn users_route(State(state): State<AppState>) -> Response {
     let users: Value = json!({});
 
     Response::builder()

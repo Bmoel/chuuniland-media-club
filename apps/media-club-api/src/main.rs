@@ -1,11 +1,13 @@
 use aws_sdk_rdsdata as rdsdata;
 use axum::{routing::get, Router};
 use lambda_http::{run, tracing, Error};
-use models::client_state::ClientState;
-use std::env::set_var;
+use models::app::ClientState;
+use std::{env::{set_var, var}, sync::Arc};
+use crate::{db::media_repo::MediaRepo, models::{app::AppState, media::MediaRepository}};
 
 mod models;
 mod routes;
+mod db;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -15,18 +17,28 @@ async fn main() -> Result<(), Error> {
     // Setup tracing for lambda
     tracing::init_default_subscriber();
 
-    // Setup DB
+    // Setup DB Client
     let config = aws_config::load_from_env().await;
-    let client = rdsdata::Client::new(&config);
+    let client_state = ClientState {
+        db_client: rdsdata::Client::new(&config),
+        db_resource_arn: var("DB_RESOURCE_ARN").expect("Missing Resource ARN"),
+        db_secret_arn: var("DB_SECRET_ARN").expect("Missing Secret ARN"),
+        db_name: var("DB_NAME").expect("Missing DB Name"),
+    };
 
-    let client_state = ClientState { db_client: client };
+    // Create Repositories
+    let media_repo = MediaRepo::new(client_state);
+
+    let app_state = AppState {
+        media_repository: Arc::new(media_repo) as Arc<dyn MediaRepository + Send + Sync>,
+    };
 
     let app = Router::new()
         .route("", get(routes::common::welcome_route))
         .route("/media", get(routes::media::media_route))
         .route("/users", get(routes::users::users_route))
         .fallback(routes::common::default_route)
-        .with_state(client_state);
+        .with_state(app_state);
 
     run(app).await
 }

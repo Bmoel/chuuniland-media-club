@@ -1,4 +1,4 @@
-use crate::models::client_state::ClientState;
+use crate::models::app::AppState;
 use axum::{
     body::Body,
     extract::State,
@@ -7,7 +7,7 @@ use axum::{
 };
 use serde_json::{json, Value};
 
-pub async fn media_route(State(_state): State<ClientState>) -> Response {
+pub async fn media_route(State(state): State<AppState>) -> Response {
     let media: Value = json!({}); //TODO: Get media from db
 
     Response::builder()
