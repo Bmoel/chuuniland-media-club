@@ -1,1 +1,1 @@
-# chuuniland-media-club
+# media-club

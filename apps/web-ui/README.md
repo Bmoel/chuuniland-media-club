@@ -1,4 +1,4 @@
-# chuuniland-media-club UI
+# media-club UI
 Vite + Rolldown implementation for UI
 
 ## Commands

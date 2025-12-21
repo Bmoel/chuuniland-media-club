@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./api/baseApi";
 
 export const store = configureStore({
-    devTools: {name: 'chuuniland-media-club'},
+    devTools: {name: 'media-club'},
     reducer: {
         [baseApi.reducerPath]: baseApi.reducer,
     },
