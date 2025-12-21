@@ -1,13 +1,19 @@
+use crate::{
+    db::media_repo::MediaRepo,
+    models::{app::AppState, media::MediaRepository},
+};
 use aws_sdk_rdsdata as rdsdata;
 use axum::{routing::get, Router};
 use lambda_http::{run, tracing, Error};
 use models::app::ClientState;
-use std::{env::{set_var, var}, sync::Arc};
-use crate::{db::media_repo::MediaRepo, models::{app::AppState, media::MediaRepository}};
+use std::{
+    env::{set_var, var},
+    sync::Arc,
+};
 
+mod db;
 mod models;
 mod routes;
-mod db;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
