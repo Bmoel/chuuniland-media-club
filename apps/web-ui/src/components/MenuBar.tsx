@@ -54,7 +54,7 @@ export default function MenuBar() {
                 disableSwipeToOpen
             >
                 <List sx={listCss}>
-                    <ListItem key={'title'}>
+                    <ListItem>
                         <ListItemAvatar>
                             <Avatar alt='chuuniland logo' src="/chuuniland.svg" />
                         </ListItemAvatar>
@@ -64,7 +64,6 @@ export default function MenuBar() {
                     </ListItem>
                     <Divider sx={{ mx: 1 }} />
                     <ListItem
-                        key={'main-page'}
                         onClick={() => navigateAway('/')}
                         disablePadding
                     >
@@ -76,7 +75,6 @@ export default function MenuBar() {
                         </ListItemButton>
                     </ListItem>
                     <ListItem
-                        key={'registration-page'}
                         onClick={() => navigateAway('/registration')}
                         disablePadding
                     >
