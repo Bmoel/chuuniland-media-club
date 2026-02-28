@@ -41,7 +41,7 @@ const anilistApi = baseApi.injectEndpoints({
                 method: 'POST',
             }),
             transformResponse: (response: AnilistUserInfoResponse) => {
-                return Object.values(response.data.Page.mediaList).map(user => user);
+                return Object.values(response.data.Page.mediaList);
             },
             transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
                 return response.data.errors;

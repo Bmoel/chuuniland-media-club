@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
 import { Info } from "@mui/icons-material";
 import useConfig from "../../hooks/useConfig";
@@ -18,6 +18,8 @@ function HomePage() {
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
     const { mediaList, mediaListIsLoading } = useAnilistHomeMedia();
+
+    const closeDrawer = useCallback(() => setMediaInfoDrawer({ id: undefined, isOpen: false }), []);
 
     if (mediaListIsLoading) {
         return (
@@ -75,10 +77,7 @@ function HomePage() {
             </Container>
             <MediaInfoDrawer
                 mediaInfoDrawer={mediaInfoDrawer}
-                closeDrawer={() => setMediaInfoDrawer({
-                    id: undefined,
-                    isOpen: false,
-                })}
+                closeDrawer={closeDrawer}
             />
         </>
     );

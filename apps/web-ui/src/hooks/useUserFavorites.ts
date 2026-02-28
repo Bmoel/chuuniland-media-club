@@ -32,10 +32,10 @@ function useUserFavorites() {
             }
         } catch (error: unknown) {
             if (error instanceof DOMException && error.name === 'AbortError') {
-                return []; 
+                return [];
             }
             const defaultErr = 'Failed to get favorite characters, please try again later';
-            if (typeof error === 'object' 
+            if (typeof error === 'object'
                 && error
                 && 'data' in error
                 && error.data
