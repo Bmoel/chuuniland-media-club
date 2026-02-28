@@ -52,23 +52,22 @@ async fn get_favorite_characters(
     let character_conn = data.user.favourites.characters;
 
     for character in character_conn.nodes {
-        for media in &character.media.nodes {
-            if media_id_map.contains(&(media.id as i64)) {
-                character_list.push(CharacterResponse {
-                    id: character.id,
-                    name: character.name.clone(),
-                    image: character.image.clone(),
-                    site_url: character.site_url.clone(),
-                    media: character
-                        .media
-                        .nodes
-                        .iter()
-                        .filter(|m| media_id_map.contains(&(m.id as i64)))
-                        .map(|m| m.id)
-                        .collect(),
-                });
-                break;
-            }
+        let matching_media: Vec<i32> = character
+            .media
+            .nodes
+            .iter()
+            .filter(|m| media_id_map.contains(&(m.id as i64)))
+            .map(|m| m.id)
+            .collect();
+
+        if !matching_media.is_empty() {
+            character_list.push(CharacterResponse {
+                id: character.id,
+                name: character.name,
+                image: character.image,
+                site_url: character.site_url,
+                media: matching_media,
+            });
         }
     }
     let page_info = character_conn

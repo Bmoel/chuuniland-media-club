@@ -65,19 +65,15 @@ impl FavoritesRepository for DynamoFavoritesRepo {
             return Ok(());
         }
 
-        let mut request = self
+        let ns: Vec<String> = record.character_ids.iter().map(|id| id.to_string()).collect();
+
+        self
             .client
             .put_item()
             .table_name(&self.table_name)
             .item("user_id", AttributeValue::N(record.user_id.to_string()))
-            .item("media_id", AttributeValue::N(record.media_id.to_string()));
-
-        if !record.character_ids.is_empty() {
-            let ns: Vec<String> = record.character_ids.iter().map(|id| id.to_string()).collect();
-            request = request.item("character_ids", AttributeValue::Ns(ns));
-        }
-
-        request
+            .item("media_id", AttributeValue::N(record.media_id.to_string()))
+            .item("character_ids", AttributeValue::Ns(ns))
             .send()
             .await
             .map_err(|e| MyError::Database(format!("DynamoDB PutItem Error: {}", e)))?;

@@ -29,6 +29,8 @@ pub async fn sync_all_user_favorites(state: &AppState) -> Result<usize, MyError>
     Ok(user_count)
 }
 
+const MAX_PAGES: i32 = 25;
+
 async fn sync_user_favorites(state: &AppState, user_id: i64) -> Result<(), MyError> {
     let mut page = 1i32;
     // Map of media_id -> character_ids for that media
@@ -46,7 +48,10 @@ async fn sync_user_favorites(state: &AppState, user_id: i64) -> Result<(), MyErr
             }
         }
 
-        if !result.has_next_page {
+        if !result.has_next_page || page >= MAX_PAGES {
+            if page >= MAX_PAGES && result.has_next_page {
+                tracing::warn!(user_id, "Reached page limit during favorites sync; some favorites may be skipped");
+            }
             break;
         }
         page += 1;
