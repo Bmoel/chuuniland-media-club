@@ -7,6 +7,8 @@ export type MediaClubApiResponse<T> = {
     }
 }
 
+//////////////////////////////////////////////////////////////////
+
 export type WatchStatus = "completed" | "watching";
 
 export type MediaClubMedia = {
@@ -25,6 +27,20 @@ export type MediaClubUser = {
 
 export type MediaClubUsersResponse = MediaClubApiResponse<Array<MediaClubUser>>;
 
+//////////////////////////////////////////////////////////////////
+
 export type AuthAnilistUserRequest = { code: string };
 
 export type AuthAnilistUserResponse = MediaClubApiResponse<null>;
+
+//////////////////////////////////////////////////////////////////
+
+export type UserFavorites = {
+    user_id: number,
+    media_id: number,
+    character_ids: number[],
+}
+
+export type UserFavoritesResponse = MediaClubApiResponse<UserFavorites>;
+
+//////////////////////////////////////////////////////////////////

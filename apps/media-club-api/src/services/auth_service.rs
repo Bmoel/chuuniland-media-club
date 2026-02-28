@@ -1,4 +1,4 @@
-use crate::services::anilist_service;
+use crate::services::anilist_auth_service;
 use crate::{errors::MyError, models::app::AppState};
 use axum::extract::State;
 
@@ -18,6 +18,6 @@ async fn query_anilist_api_for_user_id(
     state: &AppState,
     auth_code: &str,
 ) -> Result<i32, MyError> {
-    let token = anilist_service::exchange_code_for_token(&state, auth_code).await?;
-    Ok(anilist_service::get_anilist_user_id(&state.http_client, &token).await?)
+    let token = anilist_auth_service::exchange_code_for_token(&state, auth_code).await?;
+    Ok(anilist_auth_service::get_anilist_user_id(&state, &token).await?)
 }

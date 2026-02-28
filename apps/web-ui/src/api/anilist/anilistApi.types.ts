@@ -80,35 +80,34 @@ export type AnilistUserInfoResponse = AnilistResponse<AnilistUsersInfoResponseDa
 
 //////////////////////////////////////////////////////////////////
 
-export type AnilistUserFavorites = {
-    about?: string;
-    bannerImage?: string;
-    favourites: {
-        anime: {
-            nodes: Array<{ id: number }>
-        }
-        characters: {
-            nodes: Array<{
-                id: number;
-                name: {
-                    full?: string;
-                }
-                image: {
-                    medium?: string;
-                }
-                siteUrl?: string;
-                media: {
-                    nodes: Array<{ id: number }>
-                }
-            }>
-        }
-    }
-}
+export type AnilistCharacterInfo = {
+    id: number;
+    favourites: number;
+    image: {
+        medium?: string;
+    };
+    name: {
+        userPreferred?: string;
+    };
+};
 
-export type AnilistUserFavoriesRequest = {
-    id: number,
-}
+export type AnilistCharactersRequest = {
+    idIn: number[];
+};
 
-export type AnilistUserFavoritesResponse = AnilistResponse<{User: AnilistUserFavorites}>;
+export type AnilistCharactersResponseData = {
+    Page: {
+        characters: AnilistCharacterInfo[];
+    };
+};
+
+export type AnilistCharactersResponse = AnilistResponse<AnilistCharactersResponseData>;
+
+//////////////////////////////////////////////////////////////////
+
+export type AnilistRateLimitError = {
+    isRateLimited: true;
+    retryAfterSeconds: number;
+};
 
 //////////////////////////////////////////////////////////////////

@@ -5,24 +5,30 @@ import useConfig from "../../hooks/useConfig";
 import { useEffect, useMemo, useState } from "react";
 import MediaPageBreadcrumbs from "./components/MediaPageBreadcrumbs";
 import MediaScoreImageBox from "./components/MediaScoreImageBox";
-import { type MediaAnilistUser } from "../../api/anilist/anilistApi.types";
+import { type AnilistRateLimitError, type MediaAnilistUser } from "../../api/anilist/anilistApi.types";
 import useAnilistUsersMediaInfo from "../../hooks/useAnilistUsersMediaInfo";
 import UserList from "./components/UserList";
 import MediaMemberInfoStack from "./components/MediaMemberInfoStack";
 import AnilistChip from "../../components/AnilistChip";
 import useDateFormat from "../../hooks/useDateFormat";
 import SelectedUserInfo from "./components/SelectedUserInfo";
+import RateLimitAlert from "../../components/RateLimitAlert";
 
 function MediaPage() {
     const [selectedUser, setSelectedUser] = useState<MediaAnilistUser | undefined>(undefined);
 
     const { id } = useParams();
     const { isMobile } = useConfig();
-    const { media, mediaIsLoading } = useGetMedia(Number(id));
-    const { data: anilistUsers, isFetching } = useAnilistUsersMediaInfo(
+    const { media, mediaIsLoading, anilistRateLimitError: mediaRateLimitError, refetchAnilist } = useGetMedia(Number(id));
+    const { data: anilistUsers, isFetching, error: usersError, refetch: refetchUsers } = useAnilistUsersMediaInfo(
         Number(id),
         !(media?.media_club_status === 'completed')
     );
+
+    const usersRateLimitError: AnilistRateLimitError | null =
+        (usersError && typeof usersError === 'object' && 'isRateLimited' in usersError)
+            ? usersError as AnilistRateLimitError
+            : null;
     const formatDate = useDateFormat();
     const navigate = useNavigate();
 
@@ -43,10 +49,21 @@ function MediaPage() {
     }, [anilistUsers]);
 
     useEffect(() => {
-        if (!mediaIsLoading && !media) {
+        if (!mediaIsLoading && !media && !mediaRateLimitError) {
             navigate('/');
         }
-    }, [media, mediaIsLoading, navigate]);
+    }, [media, mediaIsLoading, navigate, mediaRateLimitError]);
+
+    if (mediaRateLimitError && !media) {
+        return (
+            <Container maxWidth="lg">
+                <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <MediaPageBreadcrumbs mediaInfo={undefined} />
+                    <RateLimitAlert key={mediaRateLimitError.retryAfterSeconds} error={mediaRateLimitError} onRetry={refetchAnilist} />
+                </Box>
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="lg">
@@ -70,7 +87,7 @@ function MediaPage() {
                         </Grid>
                         <Grid size={isMobile ? 12 : 6}>
                             <MediaScoreImageBox
-                                mediaSrc={'/chuuniland.svg'}
+                                mediaSrc={'/yomogi.svg'}
                                 titleText="Media Club Average Score"
                                 scoreText={`${mediaClubAverageScore} / 100`}
                             />
@@ -92,15 +109,19 @@ function MediaPage() {
                             </MediaMemberInfoStack>
                         </Grid>
                         <Grid size={12}>
-                            <UserList
-                                anilistUsers={anilistUsers}
-                                selectedUser={selectedUser}
-                                setSelectedUser={setSelectedUser}
-                                dataIsLoading={isFetching}
-                            />
+                            {usersRateLimitError ? (
+                                <RateLimitAlert key={usersRateLimitError.retryAfterSeconds} error={usersRateLimitError} onRetry={refetchUsers} />
+                            ) : (
+                                <UserList
+                                    anilistUsers={anilistUsers}
+                                    selectedUser={selectedUser}
+                                    setSelectedUser={setSelectedUser}
+                                    dataIsLoading={isFetching}
+                                />
+                            )}
                         </Grid>
                         {(selectedUser !== undefined && media !== undefined) && (
-                            <SelectedUserInfo media={media} selectedUser={selectedUser} />
+                            <SelectedUserInfo selectedUser={selectedUser} mediaId={media.id} />
                         )}
                     </Grid>
                 </Stack>

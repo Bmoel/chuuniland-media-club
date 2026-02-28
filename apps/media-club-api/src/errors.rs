@@ -19,6 +19,9 @@ pub enum MyError {
 
     #[error("Internal server error: {0}")]
     Internal(String),
+
+    #[error("Rate Limit error")]
+    RateLimited(u64),
 }
 
 impl IntoResponse for MyError {
@@ -43,6 +46,17 @@ impl IntoResponse for MyError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Media Club API failed".into(),
                 msg.clone(),
+            ),
+            MyError::RateLimited(ref time_seconds) => (
+                StatusCode::TOO_MANY_REQUESTS,
+                format!(
+                    "Anilist API Rate Limit hit, please wait {} seconds to retry",
+                    time_seconds
+                ),
+                format!(
+                    "Anilist API Rate Limit hit, please wait {} seconds to retry",
+                    time_seconds
+                ),
             ),
         };
 

@@ -19,7 +19,7 @@ function MediaPageBreadcrumbs({ mediaInfo }: MediaPageBreadcrumbsProps) {
             <Box display="flex" alignItems="center">
                 <Avatar
                     alt='chuuniland logo'
-                    src={mediaInfo?.coverImage.extraLarge ?? '/chuuniland.svg'}
+                    src={mediaInfo?.coverImage.extraLarge ?? '/subaru.svg'}
                     sx={{ width: 22, height: 22, mr: 0.5 }}
                 />
                 {mediaInfo && (

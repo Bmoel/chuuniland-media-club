@@ -7,6 +7,7 @@ import type { MediaInfoDrawerType } from "../../types/drawers.types";
 import useAnilistHomeMedia from "../../hooks/useAnilistHomeMedia";
 import { useNavigate } from "react-router";
 import usePreferredMediaName from "../../hooks/usePreferredMediaName";
+import RateLimitAlert from "../../components/RateLimitAlert";
 
 function HomePage() {
     const [mediaInfoDrawer, setMediaInfoDrawer] = useState<MediaInfoDrawerType>({
@@ -17,7 +18,7 @@ function HomePage() {
     const { isMobile } = useConfig();
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
-    const { mediaList, mediaListIsLoading } = useAnilistHomeMedia();
+    const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist } = useAnilistHomeMedia();
 
     const closeDrawer = useCallback(() => setMediaInfoDrawer({ id: undefined, isOpen: false }), []);
 
@@ -26,6 +27,14 @@ function HomePage() {
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 25 }}>
                 <CircularProgress size={80} sx={{ mb: 2 }} />
                 <Typography variant="h6" align="center">Loading... (-■_■)</Typography>
+            </Box>
+        );
+    }
+
+    if (anilistRateLimitError) {
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 25, px: 2 }}>
+                <RateLimitAlert key={anilistRateLimitError.retryAfterSeconds} error={anilistRateLimitError} onRetry={refetchAnilist} />
             </Box>
         );
     }

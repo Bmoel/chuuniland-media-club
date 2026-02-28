@@ -1,19 +1,38 @@
 import { baseApi } from "../baseApi";
-import { ANILIST_MEDIA_INFO_TAG, ANILIST_USER_FAVORITES_TAG, ANILIST_USERS_INFO_TAG } from "./anilistApi.tags";
-import type { 
+import { ANILIST_MEDIA_INFO_TAG, ANILIST_USERS_INFO_TAG, ANILIST_CHARACTERS_TAG } from "./anilistApi.tags";
+import type {
     AnilistUserInfoRequest,
     AnilistUserInfoResponse,
     AnilistMediaInfo,
     AnilistMediaInfoRequest,
     AnilistMediaInfoResponse,
     MediaAnilistUser,
-    AnilistUserFavorites,
-    AnilistUserFavoriesRequest,
-    AnilistUserFavoritesResponse,
+    AnilistCharacterInfo,
+    AnilistCharactersRequest,
+    AnilistCharactersResponse,
+    AnilistRateLimitError,
 } from "./anilistApi.types";
-import { MediaInfoQuery, MediaListWithUsersQuery, UserFavoritesQuery } from "./anilistApi.queries";
+import { MediaInfoQuery, MediaListWithUsersQuery, CharactersQuery } from "./anilistApi.queries";
 
 const BASE_URL: string = 'https://graphql.anilist.co';
+
+function parseRateLimitError(
+    response: { status: number | string },
+    meta: { response?: Response } | undefined,
+): AnilistRateLimitError | null {
+    // AniList's 429 response lacks CORS headers, so browsers block it entirely
+    // and RTK Query reports it as FETCH_ERROR instead of status 429.
+    if (response.status !== 429 && response.status !== 'FETCH_ERROR') return null;
+    const retryAfter = meta?.response?.headers.get('Retry-After');
+    const resetAt = meta?.response?.headers.get('X-RateLimit-Reset');
+    let retryAfterSeconds = 60;
+    if (retryAfter && !isNaN(Number(retryAfter))) {
+        retryAfterSeconds = Number(retryAfter);
+    } else if (resetAt && !isNaN(Number(resetAt))) {
+        retryAfterSeconds = Math.max(0, Number(resetAt) - Math.floor(Date.now() / 1000));
+    }
+    return { isRateLimited: true, retryAfterSeconds };
+}
 
 const anilistApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -29,9 +48,7 @@ const anilistApi = baseApi.injectEndpoints({
             transformResponse: (response: AnilistMediaInfoResponse) => {
                 return response.data.Page.media ?? [];
             },
-            transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
-                return response.data.errors;
-            },
+            transformErrorResponse: parseRateLimitError,
             providesTags: () => [ANILIST_MEDIA_INFO_TAG],
         }),
         anilistUsersMediaInfo: build.query<MediaAnilistUser[], AnilistUserInfoRequest>({
@@ -46,33 +63,29 @@ const anilistApi = baseApi.injectEndpoints({
             transformResponse: (response: AnilistUserInfoResponse) => {
                 return Object.values(response.data.Page.mediaList);
             },
-            transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
-                return response.data.errors;
-            },
+            transformErrorResponse: parseRateLimitError,
             providesTags: [ANILIST_USERS_INFO_TAG],
         }),
-        anilistUserFavorites: build.query<AnilistUserFavorites, AnilistUserFavoriesRequest>({
+        anilistCharacters: build.query<AnilistCharacterInfo[], AnilistCharactersRequest>({
             query: (vars) => ({
                 url: BASE_URL,
                 body: {
-                    query: UserFavoritesQuery,
+                    query: CharactersQuery,
                     variables: vars,
                 },
                 method: 'POST',
             }),
-            transformResponse: (response: AnilistUserFavoritesResponse) => {
-                return response.data.User;
+            transformResponse: (response: AnilistCharactersResponse) => {
+                return response.data.Page.characters ?? [];
             },
-            transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
-                return response.data.errors;
-            },
-            providesTags: [ANILIST_USER_FAVORITES_TAG],
-        })
+            transformErrorResponse: parseRateLimitError,
+            providesTags: [ANILIST_CHARACTERS_TAG],
+        }),
     })
 });
 
 export const {
     useAnilistMediaInfoQuery,
     useAnilistUsersMediaInfoQuery,
-    useAnilistUserFavoritesQuery,
+    useAnilistCharactersQuery,
 } = anilistApi;
