@@ -79,3 +79,28 @@ export type AnilistUserInfoRequest = {
 export type AnilistUserInfoResponse = AnilistResponse<AnilistUsersInfoResponseData>;
 
 //////////////////////////////////////////////////////////////////
+
+export type AnilistCharacterInfo = {
+    id: number;
+    favourites: number;
+    image: {
+        medium?: string;
+    };
+    name: {
+        userPreferred?: string;
+    };
+};
+
+export type AnilistCharactersRequest = {
+    idIn: number[];
+};
+
+export type AnilistCharactersResponseData = {
+    Page: {
+        characters: AnilistCharacterInfo[];
+    };
+};
+
+export type AnilistCharactersResponse = AnilistResponse<AnilistCharactersResponseData>;
+
+//////////////////////////////////////////////////////////////////

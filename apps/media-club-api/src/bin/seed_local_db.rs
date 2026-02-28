@@ -10,10 +10,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
     let media_table_name = var("DB_NAME_MEDIA").map_err(|_| "media table name not found")?;
     let users_table_name = var("DB_NAME_USERS").map_err(|_| "users table name not found")?;
+    let favorites_table_name =
+        var("DB_NAME_FAVORITES").map_err(|_| "favorites table name not found")?;
     let media_table_pri_key =
         var("DB_NAME_MEDIA_PRI_KEY").map_err(|_| "media table pri key not found")?;
     let users_table_pri_key =
         var("DB_NAME_USERS_PRI_KEY").map_err(|_| "users table pri key not found")?;
+    let favorites_table_pri_key =
+        var("DB_NAME_FAVORITES_PRI_KEY").map_err(|_| "favorites table pri key not found")?;
+
+    let favorites_sort_key =
+        var("DB_NAME_FAVORITES_SORT_KEY").map_err(|_| "favorites sort key not found")?;
 
     let args: Vec<String> = env::args().collect();
     let table_map = HashMap::from([
@@ -25,14 +32,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             users_table_name.clone(),
             "./snapshots/users_snapshot.json".to_string(),
         ),
+        (
+            favorites_table_name.clone(),
+            "./snapshots/favorites_snapshot.json".to_string(),
+        ),
     ]);
     let primary_key_map = HashMap::from([
         (media_table_name.clone(), media_table_pri_key.to_string()),
         (users_table_name.clone(), users_table_pri_key.to_string()),
+        (favorites_table_name.clone(), favorites_table_pri_key.to_string()),
+    ]);
+    // Tables with a sort key use drop-and-recreate instead of item-by-item deletion
+    let sort_key_map: HashMap<String, Option<String>> = HashMap::from([
+        (media_table_name.clone(), None),
+        (users_table_name.clone(), None),
+        (favorites_table_name.clone(), Some(favorites_sort_key)),
     ]);
     let primary_key_type_map = HashMap::from([
         (media_table_name.clone(), ScalarAttributeType::N),
         (users_table_name.clone(), ScalarAttributeType::N),
+        (favorites_table_name.clone(), ScalarAttributeType::N),
     ]);
 
     if args.len() != 2 {
@@ -54,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await;
     let client = aws_sdk_dynamodb::Client::new(&config);
 
-    let current_tables = client.list_tables().send().await.unwrap();
+    let current_tables = client.list_tables().send().await?;
     let table_exists = current_tables
         .table_names()
         .contains(&table_name.to_string());
@@ -62,9 +81,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let primary_key = primary_key_map
         .get(table_name)
         .expect("primary key does not exist");
-    if table_exists {
+    let sort_key = sort_key_map
+        .get(table_name)
+        .expect("sort key entry does not exist");
+
+    // Tables with a composite key are dropped and recreated to avoid the complexity of
+    // deleting items by both partition + sort key. For simple single-key tables, clear
+    // items individually.
+    if table_exists && sort_key.is_some() {
+        println!("Table {} found (composite key). Dropping and recreating...", table_name);
+        client
+            .delete_table()
+            .table_name(table_name)
+            .send()
+            .await
+            .expect("failed to delete table");
+        // Mark as not existing so the creation block runs below
+    } else if table_exists {
         println!("Table {} found. Clearing values...", table_name);
-        let items = client.scan().table_name(table_name).send().await.unwrap();
+        let items = client.scan().table_name(table_name).send().await?;
 
         for item in items.items.unwrap_or_default() {
             let id = item.get(primary_key).unwrap();
@@ -74,33 +109,51 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .table_name(table_name)
                 .key(primary_key, id.clone())
                 .send()
-                .await
-                .unwrap();
+                .await?;
         }
-    } else {
+    }
+
+    if !table_exists || sort_key.is_some() {
         println!("Table {} not found. Creating...", table_name);
         let primary_key_type = primary_key_type_map
             .get(table_name)
             .expect("primary key type not found")
             .clone();
-        client
+
+        let mut create_req = client
             .create_table()
             .table_name(table_name)
             .attribute_definitions(
                 AttributeDefinition::builder()
                     .attribute_name(primary_key)
-                    .attribute_type(primary_key_type)
-                    .build()
-                    .unwrap(),
+                    .attribute_type(primary_key_type.clone())
+                    .build()?,
             )
             .key_schema(
                 KeySchemaElement::builder()
                     .attribute_name(primary_key)
                     .key_type(KeyType::Hash)
-                    .build()
-                    .unwrap(),
+                    .build()?,
             )
-            .billing_mode(aws_sdk_dynamodb::types::BillingMode::PayPerRequest)
+            .billing_mode(aws_sdk_dynamodb::types::BillingMode::PayPerRequest);
+
+        if let Some(sk) = sort_key {
+            create_req = create_req
+                .attribute_definitions(
+                    AttributeDefinition::builder()
+                        .attribute_name(sk)
+                        .attribute_type(primary_key_type)
+                        .build()?,
+                )
+                .key_schema(
+                    KeySchemaElement::builder()
+                        .attribute_name(sk)
+                        .key_type(KeyType::Range)
+                        .build()?,
+                );
+        }
+
+        create_req
             .send()
             .await
             .expect("failed to create table");
@@ -134,7 +187,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn get_tables_as_string(tables: HashMap<String, String>) -> String {
-    return tables.keys().cloned().collect::<Vec<String>>().join(", ");
+    tables.keys().cloned().collect::<Vec<String>>().join(", ")
 }
 
 fn json_to_attribute_value(val: &serde_json::Value) -> AttributeValue {
@@ -144,6 +197,13 @@ fn json_to_attribute_value(val: &serde_json::Value) -> AttributeValue {
         }
         if let Some(n) = obj.get("N").and_then(|v| v.as_str()) {
             return AttributeValue::N(n.to_string());
+        }
+        if let Some(ns) = obj.get("NS").and_then(|v| v.as_array()) {
+            let values: Vec<String> = ns
+                .iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect();
+            return AttributeValue::Ns(values);
         }
     }
     AttributeValue::Null(true)

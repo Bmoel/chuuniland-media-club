@@ -1,14 +1,17 @@
 import { baseApi } from "../baseApi";
-import { ANILIST_MEDIA_INFO_TAG, ANILIST_USERS_INFO_TAG } from "./anilistApi.tags";
-import type { 
+import { ANILIST_MEDIA_INFO_TAG, ANILIST_USERS_INFO_TAG, ANILIST_CHARACTERS_TAG } from "./anilistApi.tags";
+import type {
     AnilistUserInfoRequest,
     AnilistUserInfoResponse,
     AnilistMediaInfo,
     AnilistMediaInfoRequest,
     AnilistMediaInfoResponse,
     MediaAnilistUser,
+    AnilistCharacterInfo,
+    AnilistCharactersRequest,
+    AnilistCharactersResponse,
 } from "./anilistApi.types";
-import { MediaInfoQuery, MediaListWithUsersQuery } from "./anilistApi.queries";
+import { MediaInfoQuery, MediaListWithUsersQuery, CharactersQuery } from "./anilistApi.queries";
 
 const BASE_URL: string = 'https://graphql.anilist.co';
 
@@ -48,10 +51,25 @@ const anilistApi = baseApi.injectEndpoints({
             },
             providesTags: [ANILIST_USERS_INFO_TAG],
         }),
+        anilistCharacters: build.query<AnilistCharacterInfo[], AnilistCharactersRequest>({
+            query: (vars) => ({
+                url: BASE_URL,
+                body: {
+                    query: CharactersQuery,
+                    variables: vars,
+                },
+                method: 'POST',
+            }),
+            transformResponse: (response: AnilistCharactersResponse) => {
+                return response.data.Page.characters ?? [];
+            },
+            providesTags: [ANILIST_CHARACTERS_TAG],
+        }),
     })
 });
 
 export const {
     useAnilistMediaInfoQuery,
     useAnilistUsersMediaInfoQuery,
+    useAnilistCharactersQuery,
 } = anilistApi;

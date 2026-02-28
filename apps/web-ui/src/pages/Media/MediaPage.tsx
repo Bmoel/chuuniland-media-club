@@ -100,7 +100,7 @@ function MediaPage() {
                             />
                         </Grid>
                         {(selectedUser !== undefined && media !== undefined) && (
-                            <SelectedUserInfo selectedUser={selectedUser} />
+                            <SelectedUserInfo selectedUser={selectedUser} mediaId={media.id} />
                         )}
                     </Grid>
                 </Stack>

@@ -1,4 +1,4 @@
-.PHONY: db seed run
+.PHONY: db seed sync-to-snapshot dev favorites-sync-job invoke-favorites-sync query
 
 # Start DynamoDB Local
 db:
@@ -8,9 +8,20 @@ db:
 seed:
 	cargo run --bin seed_local_db -- $(TABLE)
 
+sync-to-snapshot:
+	aws dynamodb scan --table-name $(TABLE) --endpoint-url http://localhost:8000 > ./snapshots/$(FILE).json
+
 # Run the local API
 dev:
 	cargo lambda watch
+
+# Run the favorites sync job locally (keep running to accept invocations)
+favorites-sync-job:
+	cargo lambda watch --bin favorites_job
+
+# Invoke the favorites sync job (requires favorites-sync-job to be running)
+invoke-favorites-sync:
+	cargo lambda invoke favorites_job --data-ascii '{}'
 
 # Query the lambda api
 query:

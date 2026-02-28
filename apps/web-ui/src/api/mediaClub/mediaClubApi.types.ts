@@ -34,3 +34,13 @@ export type AuthAnilistUserRequest = { code: string };
 export type AuthAnilistUserResponse = MediaClubApiResponse<null>;
 
 //////////////////////////////////////////////////////////////////
+
+export type UserFavorites = {
+    user_id: number,
+    media_id: number,
+    character_ids: number[],
+}
+
+export type UserFavoritesResponse = MediaClubApiResponse<UserFavorites>;
+
+//////////////////////////////////////////////////////////////////

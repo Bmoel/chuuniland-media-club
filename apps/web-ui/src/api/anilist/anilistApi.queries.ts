@@ -31,6 +31,23 @@ query MediaInfoQuery($idIn: [Int], $sort: [MediaSort]) {
 }
 `;
 
+export const CharactersQuery = `
+query Characters($idIn: [Int]) {
+  Page {
+    characters(id_in: $idIn) {
+      id
+      favourites
+      image {
+        medium
+      }
+      name {
+        userPreferred
+      }
+    }
+  }
+}
+`;
+
 export const MediaListWithUsersQuery = `
 query MediaList($idIn: [Int], $mediaId: Int, $format: ScoreFormat) {
   Page {

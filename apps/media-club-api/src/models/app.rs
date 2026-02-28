@@ -1,4 +1,5 @@
 use crate::{
+    db::favorites_repo::FavoritesRepository,
     models::{media::MediaRepository, users::UsersRepository},
     services::throttled_client::ThrottledClient,
 };
@@ -13,6 +14,7 @@ use std::sync::Arc;
 pub struct EnvironmentVariables {
     pub media_table_name: String,
     pub users_table_name: String,
+    pub favorites_table_name: String,
     pub client_id: String,
     pub client_secret: String,
     pub redirect_uri: String,
@@ -22,6 +24,7 @@ pub struct EnvironmentVariables {
 pub struct AppState {
     pub media_repository: Arc<dyn MediaRepository + Send + Sync>,
     pub users_repository: Arc<dyn UsersRepository + Send + Sync>,
+    pub favorites_repository: Arc<dyn FavoritesRepository + Send + Sync>,
     pub anilist_client: Arc<ThrottledClient>,
     pub environment_variables: EnvironmentVariables,
 }

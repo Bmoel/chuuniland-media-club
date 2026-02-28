@@ -1,6 +1,6 @@
 import { baseApi } from "../baseApi";
-import { MEDIA_CLUB_MEDIA_TAG, MEDIA_CLUB_USERS_TAG } from "./mediaClubApi.tags";
-import type { MediaClubMediaResponse, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser } from "./mediaClubApi.types";
+import { MEDIA_CLUB_MEDIA_TAG, MEDIA_CLUB_USERS_TAG, MEDIA_CLUB_FAVORITES_TAG } from "./mediaClubApi.tags";
+import type { MediaClubMediaResponse, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser, UserFavorites, UserFavoritesResponse } from "./mediaClubApi.types";
 
 const BASE_URL = import.meta.env.VITE_MEDIA_CLUB_API_BASE_URL;
 
@@ -34,6 +34,16 @@ const mediaClubApi = baseApi.injectEndpoints({
                 return errorData?.error?.message ?? "An unknown error occurred";
             }
         }),
+        getUserFavorites: build.query<UserFavorites, { userId: number; mediaId: number }>({
+            query: ({ userId, mediaId }) => ({
+                url: `${BASE_URL}/users/${userId}/favorites/${mediaId}`,
+                method: 'GET',
+            }),
+            providesTags: () => [MEDIA_CLUB_FAVORITES_TAG],
+            transformResponse: (response: UserFavoritesResponse) => {
+                return response.data ?? { user_id: 0, media_id: 0, character_ids: [] };
+            },
+        }),
         syncAnilistUser: build.mutation<boolean, AuthAnilistUserRequest>({
             query: ({ code }) => ({
                 url: `${BASE_URL}/auth/sync`,
@@ -56,6 +66,7 @@ const mediaClubApi = baseApi.injectEndpoints({
 export const {
     useMediaClubMediaInfoQuery,
     useGetUsersQuery,
+    useGetUserFavoritesQuery,
     useSyncAnilistUserMutation,
     useRemoveAnilistUserMutation,
 } = mediaClubApi;
