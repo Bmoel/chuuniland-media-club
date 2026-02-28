@@ -2,11 +2,17 @@ import { useMemo } from "react";
 import { useAnilistMediaInfoQuery } from "../api/anilist/anilistApi";
 import { useMediaClubMediaInfoQuery } from "../api/mediaClub/mediaClubApi";
 import type { Media } from "../types/media.types";
+import type { AnilistRateLimitError } from "../api/anilist/anilistApi.types";
 
-function useAnilistHomeMedia(): {mediaList: Media[] | undefined, mediaListIsLoading: boolean} {
+function useAnilistHomeMedia(): {
+    mediaList: Media[] | undefined;
+    mediaListIsLoading: boolean;
+    anilistRateLimitError: AnilistRateLimitError | null;
+    refetchAnilist: () => void;
+} {
     const {data: mediaClubMediaInfo, isLoading} = useMediaClubMediaInfoQuery(undefined);
 
-    const {data: anilistMediaInfo} = useAnilistMediaInfoQuery(
+    const {data: anilistMediaInfo, error: anilistError, refetch: refetchAnilist} = useAnilistMediaInfoQuery(
         {
             idIn: mediaClubMediaInfo?.map(mediaEntry => mediaEntry.id.toString()) ?? [],
             sort: 'TITLE_ENGLISH',
@@ -15,6 +21,11 @@ function useAnilistHomeMedia(): {mediaList: Media[] | undefined, mediaListIsLoad
             skip: !mediaClubMediaInfo
         }
     );
+
+    const anilistRateLimitError: AnilistRateLimitError | null =
+        (anilistError && typeof anilistError === 'object' && 'isRateLimited' in anilistError)
+            ? anilistError as AnilistRateLimitError
+            : null;
 
     const mediaClubMediaMap = useMemo(() => {
         if (!mediaClubMediaInfo) return undefined;
@@ -36,7 +47,7 @@ function useAnilistHomeMedia(): {mediaList: Media[] | undefined, mediaListIsLoad
         });
     }, [anilistMediaInfo, mediaClubMediaMap]);
 
-    return {mediaList, mediaListIsLoading: isLoading};
+    return {mediaList, mediaListIsLoading: isLoading, anilistRateLimitError, refetchAnilist};
 }
 
 export default useAnilistHomeMedia;

@@ -20,7 +20,9 @@ function parseRateLimitError(
     response: { status: number | string },
     meta: { response?: Response } | undefined,
 ): AnilistRateLimitError | null {
-    if (response.status !== 429) return null;
+    // AniList's 429 response lacks CORS headers, so browsers block it entirely
+    // and RTK Query reports it as FETCH_ERROR instead of status 429.
+    if (response.status !== 429 && response.status !== 'FETCH_ERROR') return null;
     const retryAfter = meta?.response?.headers.get('Retry-After');
     const resetAt = meta?.response?.headers.get('X-RateLimit-Reset');
     let retryAfterSeconds = 60;
