@@ -1,5 +1,6 @@
-import { Avatar, Box, CircularProgress, Grid, Link, Stack, Typography } from "@mui/material";
+import {Avatar, Box, CircularProgress, Grid, Link, Stack, Tooltip, Typography} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import AnilistChip from "../../../components/AnilistChip";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import useConfig from "../../../hooks/useConfig";
@@ -81,7 +82,7 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                             alt={character.name.userPreferred}
                             sx={{ width: 48, height: 48 }}
                         />
-                        <Typography variant="body2" fontWeight="bold" flex={1}>
+                        <Typography variant="body2" fontWeight="bold" flex={1} color="primary" sx={{ textDecoration: 'underline' }}>
                             {character.name.userPreferred}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -126,7 +127,17 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
             </Grid>
             <Grid size={12}>
                 <MediaMemberInfoStack>
-                    <Typography variant="overline" color="text.secondary">FAVORITE CHARACTERS</Typography>
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                        <Typography variant="overline" color="text.secondary">FAVORITE CHARACTERS</Typography>
+                        <Tooltip
+                            title="Favorite characters are cached and refreshed every Friday at 11 PM PST — check back then for the latest picks!"
+                            arrow
+                            placement="top"
+                            enterTouchDelay={0}
+                        >
+                            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help', mb: '-1px' }} />
+                        </Tooltip>
+                    </Stack>
                     {renderFavorites}
                 </MediaMemberInfoStack>
             </Grid>
