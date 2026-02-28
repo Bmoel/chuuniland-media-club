@@ -82,7 +82,7 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                             alt={character.name.userPreferred}
                             sx={{ width: 48, height: 48 }}
                         />
-                        <Typography variant="body2" fontWeight="bold" flex={1}>
+                        <Typography variant="body2" fontWeight="bold" flex={1} color="primary" sx={{ textDecoration: 'underline' }}>
                             {character.name.userPreferred}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
