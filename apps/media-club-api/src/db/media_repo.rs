@@ -14,7 +14,7 @@ impl MediaRepo {
     pub fn new(client_state: Arc<Client>, table_name: String) -> Self {
         Self {
             client: client_state,
-            table_name: table_name,
+            table_name,
         }
     }
 }

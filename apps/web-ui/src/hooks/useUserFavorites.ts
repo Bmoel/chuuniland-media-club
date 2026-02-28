@@ -20,7 +20,7 @@ function useUserFavorites(userId?: number) {
             return [];
         }
         const characters: Character[] = [];
-        userFavorites.favourites.characters.nodes.filter(node => {
+        userFavorites.favourites.characters.nodes.forEach(node => {
             const mediaCharacterAreIn = node.media.nodes;
             mediaCharacterAreIn.forEach(mediaObj => {
                 if (mediaObj.id === animeId) {
