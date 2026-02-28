@@ -34,26 +34,3 @@ export type AuthAnilistUserRequest = { code: string };
 export type AuthAnilistUserResponse = MediaClubApiResponse<null>;
 
 //////////////////////////////////////////////////////////////////
-
-export type AnilistCharacter = {
-    id: number;
-    name: {
-        full?: string;
-    }
-    image: {
-        medium?: string;
-    }
-    siteUrl?: string;
-    media: Array<number>,
-}
-
-export type UserFavorites = {
-    characters: Array<AnilistCharacter>,
-    has_next_page: boolean,
-}
-
-export type UserFavoritesRequest = {user_id: number, page: number};
-
-export type UserFavoritesResponse = MediaClubApiResponse<UserFavorites>;
-
-//////////////////////////////////////////////////////////////////

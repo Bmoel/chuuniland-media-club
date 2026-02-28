@@ -2,16 +2,13 @@ import { Grid, Typography } from "@mui/material";
 import AnilistChip from "../../../components/AnilistChip";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import useConfig from "../../../hooks/useConfig";
-import type { Media } from "../../../types/media.types";
 import MediaMemberInfoStack from "./MediaMemberInfoStack";
-import CharacterList from "../../../components/CharacterList";
 
 interface SelectUserInfoProps {
     selectedUser: MediaAnilistUser,
-    media: Media,
 }
 
-function SelectedUserInfo({ selectedUser, media }: SelectUserInfoProps) {
+function SelectedUserInfo({ selectedUser }: SelectUserInfoProps) {
     const { isMobile } = useConfig();
 
     return (
@@ -40,12 +37,6 @@ function SelectedUserInfo({ selectedUser, media }: SelectUserInfoProps) {
                     >
                         {selectedUser.notes ?? "No notes have been provided for this title"}
                     </Typography>
-                </MediaMemberInfoStack>
-            </Grid>
-            <Grid size={12}>
-                <MediaMemberInfoStack>
-                    <Typography variant="overline" color="text.secondary">FAVORITE CHARACTERS</Typography>
-                    <CharacterList userId={selectedUser.user.id} mediaId={media.id} />
                 </MediaMemberInfoStack>
             </Grid>
         </>
