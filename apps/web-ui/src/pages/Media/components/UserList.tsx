@@ -1,10 +1,10 @@
-import { Avatar, Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Stack, Tooltip, Typography } from "@mui/material";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import { useCallback, useMemo, type Dispatch, type SetStateAction } from "react";
 import MemberSkeleton from "../../../components/skeleton/MemberSkeleton";
-import { Info } from "@mui/icons-material";
 import useConfig from "../../../hooks/useConfig";
 import UserListStack from "./UserListStack";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 interface UserListInterface {
     anilistUsers: MediaAnilistUser[] | undefined;
@@ -48,7 +48,7 @@ function UserList(props: UserListInterface) {
 
     return (
         <Box>
-            <Stack direction="row" alignItems="center">
+            <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="overline" sx={{ color: 'text.secondary' }}>
                     Members
                 </Typography>
@@ -57,9 +57,7 @@ function UserList(props: UserListInterface) {
                     placement={isMobile ? 'bottom-end' : 'right-start'}
                     enterTouchDelay={0}
                 >
-                    <IconButton size="small">
-                        <Info />
-                    </IconButton>
+                    <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help', mb: '-1px' }} />
                 </Tooltip>
             </Stack>
             {(sortedUsers === undefined || sortedUsers.length === 0) ? (

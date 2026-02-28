@@ -1,4 +1,4 @@
-import { Avatar, Box, CircularProgress, Grid, Link, Stack, Tooltip, Typography } from "@mui/material";
+import {Avatar, Box, CircularProgress, Grid, Link, Stack, Tooltip, Typography} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import AnilistChip from "../../../components/AnilistChip";
@@ -133,8 +133,9 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                             title="Favorite characters are cached and refreshed every Friday at 11 PM PST — check back then for the latest picks!"
                             arrow
                             placement="top"
+                            enterTouchDelay={0}
                         >
-                            <InfoOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary', cursor: 'help', mb: '-1px' }} />
+                            <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help', mb: '-1px' }} />
                         </Tooltip>
                     </Stack>
                     {renderFavorites}
