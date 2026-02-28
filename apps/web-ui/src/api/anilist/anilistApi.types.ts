@@ -104,3 +104,10 @@ export type AnilistCharactersResponseData = {
 export type AnilistCharactersResponse = AnilistResponse<AnilistCharactersResponseData>;
 
 //////////////////////////////////////////////////////////////////
+
+export type AnilistRateLimitError = {
+    isRateLimited: true;
+    retryAfterSeconds: number;
+};
+
+//////////////////////////////////////////////////////////////////

@@ -10,10 +10,27 @@ import type {
     AnilistCharacterInfo,
     AnilistCharactersRequest,
     AnilistCharactersResponse,
+    AnilistRateLimitError,
 } from "./anilistApi.types";
 import { MediaInfoQuery, MediaListWithUsersQuery, CharactersQuery } from "./anilistApi.queries";
 
 const BASE_URL: string = 'https://graphql.anilist.co';
+
+function parseRateLimitError(
+    response: { status: number | string },
+    meta: { response?: Response } | undefined,
+): AnilistRateLimitError | null {
+    if (response.status !== 429) return null;
+    const retryAfter = meta?.response?.headers.get('Retry-After');
+    const resetAt = meta?.response?.headers.get('X-RateLimit-Reset');
+    let retryAfterSeconds = 60;
+    if (retryAfter && !isNaN(Number(retryAfter))) {
+        retryAfterSeconds = Number(retryAfter);
+    } else if (resetAt && !isNaN(Number(resetAt))) {
+        retryAfterSeconds = Math.max(0, Number(resetAt) - Math.floor(Date.now() / 1000));
+    }
+    return { isRateLimited: true, retryAfterSeconds };
+}
 
 const anilistApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
@@ -29,9 +46,7 @@ const anilistApi = baseApi.injectEndpoints({
             transformResponse: (response: AnilistMediaInfoResponse) => {
                 return response.data.Page.media ?? [];
             },
-            transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
-                return response.data.errors;
-            },
+            transformErrorResponse: parseRateLimitError,
             providesTags: () => [ANILIST_MEDIA_INFO_TAG],
         }),
         anilistUsersMediaInfo: build.query<MediaAnilistUser[], AnilistUserInfoRequest>({
@@ -46,9 +61,7 @@ const anilistApi = baseApi.injectEndpoints({
             transformResponse: (response: AnilistUserInfoResponse) => {
                 return Object.values(response.data.Page.mediaList);
             },
-            transformErrorResponse: (response: {status: number, data: AnilistMediaInfoResponse}) => {
-                return response.data.errors;
-            },
+            transformErrorResponse: parseRateLimitError,
             providesTags: [ANILIST_USERS_INFO_TAG],
         }),
         anilistCharacters: build.query<AnilistCharacterInfo[], AnilistCharactersRequest>({
@@ -63,6 +76,7 @@ const anilistApi = baseApi.injectEndpoints({
             transformResponse: (response: AnilistCharactersResponse) => {
                 return response.data.Page.characters ?? [];
             },
+            transformErrorResponse: parseRateLimitError,
             providesTags: [ANILIST_CHARACTERS_TAG],
         }),
     })

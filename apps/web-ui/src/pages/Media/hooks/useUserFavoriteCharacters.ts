@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetUserFavoritesQuery } from "../../../api/mediaClub/mediaClubApi";
 import { useAnilistCharactersQuery } from "../../../api/anilist/anilistApi";
-import type { AnilistCharacterInfo } from "../../../api/anilist/anilistApi.types";
+import type { AnilistCharacterInfo, AnilistRateLimitError } from "../../../api/anilist/anilistApi.types";
 
 interface Params {
     userId: number;
@@ -11,6 +11,7 @@ interface Params {
 interface Result {
     characters: AnilistCharacterInfo[];
     isLoading: boolean;
+    rateLimitError: AnilistRateLimitError | null;
 }
 
 function useUserFavoriteCharacters({ userId, mediaId }: Params): Result {
@@ -26,12 +27,26 @@ function useUserFavoriteCharacters({ userId, mediaId }: Params): Result {
         ? skipToken
         : { idIn: characterIds };
 
-    const { data: characters = [], isFetching: charactersFetching, isLoading: charactersLoading } =
-        useAnilistCharactersQuery(charactersArg);
+    const {
+        data: characters = [],
+        isFetching: charactersFetching,
+        isLoading: charactersLoading,
+        isError: isCharactersError,
+        error: charactersError,
+    } = useAnilistCharactersQuery(charactersArg);
+
+    const rateLimitError = isCharactersError && (charactersError as AnilistRateLimitError)?.isRateLimited
+        ? (charactersError as AnilistRateLimitError)
+        : null;
+
+    if (characterIds.length === 0) {
+        return { characters: [], isLoading: favIdsLoading, rateLimitError: null };
+    }
 
     return {
-        characters: characterIds.length === 0 ? [] : characters,
+        characters,
         isLoading: favIdsLoading || charactersLoading || charactersFetching,
+        rateLimitError,
     };
 }
 

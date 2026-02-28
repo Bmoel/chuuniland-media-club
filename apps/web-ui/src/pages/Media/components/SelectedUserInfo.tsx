@@ -5,7 +5,7 @@ import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import useConfig from "../../../hooks/useConfig";
 import MediaMemberInfoStack from "./MediaMemberInfoStack";
 import useUserFavoriteCharacters from "../hooks/useUserFavoriteCharacters";
-import {useMemo} from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface SelectUserInfoProps {
     selectedUser: MediaAnilistUser,
@@ -14,14 +14,40 @@ interface SelectUserInfoProps {
 
 function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
     const { isMobile } = useConfig();
-    const { characters, isLoading } = useUserFavoriteCharacters({
+    const { characters, isLoading, rateLimitError } = useUserFavoriteCharacters({
         userId: selectedUser.user.id,
         mediaId,
     });
 
+    const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!rateLimitError) return;
+
+        let seconds = rateLimitError.retryAfterSeconds;
+
+        const interval = setInterval(() => {
+            seconds -= 1;
+            setSecondsLeft(seconds);
+            if (seconds <= 0) clearInterval(interval);
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+            setSecondsLeft(null);
+        };
+    }, [rateLimitError]);
+
     const renderFavorites = useMemo(() => {
         if (isLoading) {
             return <CircularProgress size={24} />;
+        }
+        if (rateLimitError) {
+            return (
+                <Typography variant="body1" fontStyle="italic" color="warning.main">
+                    AniList rate limit reached — retry in {secondsLeft ?? rateLimitError.retryAfterSeconds}s
+                </Typography>
+            );
         }
         if (characters.length === 0) {
             return (
@@ -68,7 +94,7 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                 ))}
             </Stack>
         );
-    }, [characters, isLoading]);
+    }, [characters, isLoading, rateLimitError, secondsLeft]);
 
     return (
         <>
