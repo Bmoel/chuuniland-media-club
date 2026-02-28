@@ -41,7 +41,7 @@ async fn get_favorite_characters(
     if let Some(errors) = response.errors {
         return Err(MyError::Internal(format!(
             "AniList API error for character favs: {}",
-            errors[0].message
+            errors.first().map(|e| e.message.as_str()).unwrap_or("unknown error")
         )));
     }
 

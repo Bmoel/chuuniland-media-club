@@ -20,7 +20,7 @@ impl ThrottledClient {
         T: serde::de::DeserializeOwned,
         P: serde::Serialize,
     {
-        let jitter = Jitter::new(Duration::from_millis(100), Duration::from_millis(100));
+        let jitter = Jitter::new(Duration::from_millis(100), Duration::from_millis(400));
         self.limiter.until_ready_with_jitter(jitter).await;
 
         let res = self

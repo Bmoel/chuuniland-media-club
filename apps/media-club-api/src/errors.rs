@@ -48,7 +48,7 @@ impl IntoResponse for MyError {
                 msg.clone(),
             ),
             MyError::RateLimited(ref time_seconds) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
+                StatusCode::TOO_MANY_REQUESTS,
                 format!(
                     "Anilist API Rate Limit hit, please wait {} seconds to retry",
                     time_seconds
