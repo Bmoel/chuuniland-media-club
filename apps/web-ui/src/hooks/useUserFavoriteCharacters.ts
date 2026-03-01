@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
-import { useGetUserFavoritesQuery } from "../../../api/mediaClub/mediaClubApi";
-import { useAnilistCharactersQuery } from "../../../api/anilist/anilistApi";
-import type { AnilistCharacterInfo, AnilistRateLimitError } from "../../../api/anilist/anilistApi.types";
+import { useGetUserFavoritesQuery } from "../api/mediaClub/mediaClubApi.ts";
+import { useAnilistCharactersQuery } from "../api/anilist/anilistApi.ts";
+import type { AnilistCharacterInfo, AnilistRateLimitError } from "../api/anilist/anilistApi.types.ts";
 
 interface Params {
     userId: number;

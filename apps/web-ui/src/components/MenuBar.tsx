@@ -2,7 +2,7 @@ import { AppBar, Avatar, Box, Chip, Divider, IconButton, List, Link, ListItem, L
 import MenuIcon from '@mui/icons-material/Menu';
 import { useCallback, useMemo, useState } from 'react';
 import useConfig from '../hooks/useConfig';
-import { AppRegistration, Home, GitHub } from '@mui/icons-material';
+import { AppRegistration, Home, GitHub, BarChart } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 
 export default function MenuBar() {
@@ -72,6 +72,17 @@ export default function MenuBar() {
                                 <Home color='info' />
                             </ListItemIcon>
                             <ListItemText primary={'Home'} />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem
+                        onClick={() => navigateAway('/stats')}
+                        disablePadding
+                    >
+                        <ListItemButton>
+                            <ListItemIcon>
+                                <BarChart color='success' />
+                            </ListItemIcon>
+                            <ListItemText primary="Stats" />
                         </ListItemButton>
                     </ListItem>
                     <ListItem
