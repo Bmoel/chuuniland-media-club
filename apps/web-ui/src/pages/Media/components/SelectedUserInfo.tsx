@@ -5,7 +5,7 @@ import AnilistChip from "../../../components/AnilistChip";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import useConfig from "../../../hooks/useConfig";
 import MediaMemberInfoStack from "./MediaMemberInfoStack";
-import useUserFavoriteCharacters from "../hooks/useUserFavoriteCharacters";
+import useUserFavoriteCharacters from "../../../hooks/useUserFavoriteCharacters.ts";
 import { useEffect, useMemo, useState } from "react";
 
 interface SelectUserInfoProps {
