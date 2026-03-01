@@ -85,7 +85,7 @@ function StatsPage() {
 
                     <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
                         <Tabs value={activeTab} onChange={handleTabChange} sx={{ px: 1 }}>
-                            <Tab label="Score Rankings" />
+                            <Tab label="Anilist Rankings" />
                             <Tab label="Club Timeline" />
                         </Tabs>
                         <Divider />
