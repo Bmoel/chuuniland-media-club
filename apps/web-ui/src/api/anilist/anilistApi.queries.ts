@@ -14,6 +14,7 @@ query MediaInfoQuery($idIn: [Int], $sort: [MediaSort]) {
       }
       bannerImage
       averageScore
+      genres
       siteUrl
       studios {
         nodes {

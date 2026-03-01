@@ -28,6 +28,7 @@ export type AnilistMediaInfo = {
     };
     bannerImage?: string;
     averageScore?: number;
+    genres?: string[];
     siteUrl?: string;
     studios: {
         nodes?: {name: string}[];
