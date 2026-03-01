@@ -23,7 +23,7 @@ function StatsPage() {
         refetchAnilist,
     } = useClubStats();
 
-    const [activeTab, setActiveTab] = useState(0);
+    const [activeTab, setActiveTab] = useState<number>(0);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
     const handleTabChange = (_: unknown, newValue: number) => {
