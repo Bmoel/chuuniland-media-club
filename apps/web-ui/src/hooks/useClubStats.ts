@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import useAnilistHomeMedia from "./useAnilistHomeMedia.ts";
-import { useGetUsersQuery } from "../api/mediaClub/mediaClubApi.ts";
 import type { Media } from "../types/media.types.ts";
 import type { AnilistRateLimitError } from "../api/anilist/anilistApi.types.ts";
 
@@ -11,7 +10,6 @@ export type ClubStats = {
     mangaCount: number;
     completedCount: number;
     watchingCount: number;
-    memberCount: number;
     timeline: Media[];
     scoreRankings: ScoredMedia[];
     genreFrequency: { genre: string; count: number }[];
@@ -22,7 +20,6 @@ export type ClubStats = {
 
 function useClubStats(): ClubStats {
     const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist } = useAnilistHomeMedia();
-    const { data: users } = useGetUsersQuery(undefined);
 
     const animeCount = useMemo(
         () => mediaList?.filter(m => m.type === "ANIME").length ?? 0,
@@ -43,8 +40,6 @@ function useClubStats(): ClubStats {
         () => mediaList?.filter(m => m.media_club_status === "watching").length ?? 0,
         [mediaList]
     );
-
-    const memberCount = users?.length ?? 0;
 
     // Chronological order by club start date, most recent first. Media without a start date goes to the end.
     const timeline = useMemo(() => {
@@ -84,7 +79,6 @@ function useClubStats(): ClubStats {
         mangaCount,
         completedCount,
         watchingCount,
-        memberCount,
         timeline,
         scoreRankings,
         genreFrequency,
