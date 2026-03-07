@@ -18,7 +18,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         var("DB_NAME_USERS_PRI_KEY").map_err(|_| "users table pri key not found")?;
     let favorites_table_pri_key =
         var("DB_NAME_FAVORITES_PRI_KEY").map_err(|_| "favorites table pri key not found")?;
-
     let favorites_sort_key =
         var("DB_NAME_FAVORITES_SORT_KEY").map_err(|_| "favorites sort key not found")?;
 
@@ -40,7 +39,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let primary_key_map = HashMap::from([
         (media_table_name.clone(), media_table_pri_key.to_string()),
         (users_table_name.clone(), users_table_pri_key.to_string()),
-        (favorites_table_name.clone(), favorites_table_pri_key.to_string()),
+        (
+            favorites_table_name.clone(),
+            favorites_table_pri_key.to_string(),
+        ),
     ]);
     // Tables with a sort key use drop-and-recreate instead of item-by-item deletion
     let sort_key_map: HashMap<String, Option<String>> = HashMap::from([
@@ -54,25 +56,50 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         (favorites_table_name.clone(), ScalarAttributeType::N),
     ]);
 
-    if args.len() != 2 {
-        eprintln!("Usage: cargo run --bin seed -- tableName");
-        eprintln!("tableName can be {}", get_tables_as_string(table_map));
-        std::process::exit(1);
-    }
-
-    let table_name = &args[1];
-    if !table_map.contains_key(table_name) {
-        eprintln!("Error: Inputted tableName does not exist");
-        eprintln!("tableName can be {}", get_tables_as_string(table_map));
-        std::process::exit(1);
-    }
-
     let config = aws_config::from_env()
         .endpoint_url("http://localhost:8000")
         .load()
         .await;
     let client = aws_sdk_dynamodb::Client::new(&config);
 
+    // No args → seed all tables; otherwise seed only the ones specified
+    let all_tables: Vec<String> = table_map.keys().cloned().collect();
+    let table_names: Vec<&str> = if args.len() < 2 {
+        all_tables.iter().map(|s| s.as_str()).collect()
+    } else {
+        let requested = &args[1..];
+        for table_name in requested {
+            if !table_map.contains_key(table_name) {
+                eprintln!("Error: '{}' is not a valid table name", table_name);
+                std::process::exit(1);
+            }
+        }
+        requested.iter().map(|s| s.as_str()).collect()
+    };
+
+    for table_name in table_names {
+        seed_table(
+            &client,
+            table_name,
+            &table_map,
+            &primary_key_map,
+            &sort_key_map,
+            &primary_key_type_map,
+        )
+        .await?;
+    }
+
+    Ok(())
+}
+
+async fn seed_table(
+    client: &aws_sdk_dynamodb::Client,
+    table_name: &str,
+    table_map: &HashMap<String, String>,
+    primary_key_map: &HashMap<String, String>,
+    sort_key_map: &HashMap<String, Option<String>>,
+    primary_key_type_map: &HashMap<String, ScalarAttributeType>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let current_tables = client.list_tables().send().await?;
     let table_exists = current_tables
         .table_names()
@@ -89,14 +116,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // deleting items by both partition + sort key. For simple single-key tables, clear
     // items individually.
     if table_exists && sort_key.is_some() {
-        println!("Table {} found (composite key). Dropping and recreating...", table_name);
+        println!(
+            "Table {} found (composite key). Dropping and recreating...",
+            table_name
+        );
         client
             .delete_table()
             .table_name(table_name)
             .send()
             .await
             .expect("failed to delete table");
-        // Mark as not existing so the creation block runs below
     } else if table_exists {
         println!("Table {} found. Clearing values...", table_name);
         let items = client.scan().table_name(table_name).send().await?;
@@ -182,12 +211,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    println!("✅ Successfully seeded items to local DynamoDB");
+    println!("✅ Successfully seeded table '{}'", table_name);
     Ok(())
-}
-
-fn get_tables_as_string(tables: HashMap<String, String>) -> String {
-    tables.keys().cloned().collect::<Vec<String>>().join(", ")
 }
 
 fn json_to_attribute_value(val: &serde_json::Value) -> AttributeValue {
