@@ -10,36 +10,26 @@ media-club-api is a Rust project that implements an AWS Lambda function in Rust.
 - [Docker](https://www.docker.com/)
 
 ### Database connection
-In order to fully use the api, you must be running the dynamodb instance on your local computer
+In order to fully use the api, you must be running the dynamodb instance on your local computer with the application tables seeded.
 
-To start the db instance in Docker, you can use one of the following commands, both do the same thing
-
-```bash
-make db
-OR
-docker run -d -p 8000:8000 amazon/dynamodb-local
-```
-This will start up the dynamo db instance in docker
-
-After this though, there are not any tables setup in your local dynamodb instance
-
-To fix this, you can run the following command
-
-```bash
-make seed TABLE=tableName
-```
-At the moment due to security concerns, this requires having scanned json data of the tables. Please reach out to me (@Bmoel) to help get this data
+At the moment due to security concerns, seeding requires having scanned JSON snapshot files of the tables. Please reach out to me (@Bmoel) to help get this data.
 
 ## Application Setup
 In order to test the application locally, you will need to do the following
 1) Turn on Docker for your OS
-2) Run `make db`
-3) Run `make seed TABLE=x ; make seed TABLE=y`
-   - Where x and y are the application table names, not listed here for security reasons. Read [Database connection](#database-connection) for more details
-4) Run `make dev`
-   - This will start the lambda local server for the application
-5) Start development server for frontend application. Read [here](https://github.com/Bmoel/media-club/tree/main/apps/web-ui) for more details
-6) Navigate to `http://localhost:5173/` to see the application
+2) Run `make start`
+   - This will start DynamoDB Local in Docker, seed all tables, and launch the local Lambda server in one step
+3) Start development server for frontend application. Read [here](https://github.com/Bmoel/media-club/tree/main/apps/web-ui) for more details
+4) Navigate to `http://localhost:5173/` to see the application
+
+### Individual commands
+If you need to run steps separately:
+
+```bash
+make db      # Start DynamoDB Local in Docker
+make seed    # Seed all tables (or pass TABLES="t1 t2" to seed specific ones)
+make dev     # Start the local Lambda server
+```
 
 ## Testing API
 
