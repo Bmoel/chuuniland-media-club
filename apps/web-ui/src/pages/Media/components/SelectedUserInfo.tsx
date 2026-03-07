@@ -97,7 +97,7 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                 ))}
             </Stack>
         );
-    }, [characters, isLoading, rateLimitError, secondsLeft]);
+    }, [characters, isLoading, rateLimitError, secondsLeft, t]);
 
     return (
         <>

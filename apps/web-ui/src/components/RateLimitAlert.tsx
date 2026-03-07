@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Button, Typography } from "@mui/material";
 import type { AnilistRateLimitError } from "../api/anilist/anilistApi.types";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 interface RateLimitAlertProps {
     error: AnilistRateLimitError;
@@ -31,7 +31,7 @@ function RateLimitAlert({ error, onRetry }: RateLimitAlertProps) {
             }
         >
             <Typography variant="body2">
-                {t('rate_limit.retrying_in')} <strong>{secondsLeft}s</strong>
+                <Trans i18nKey="rate_limit.retrying_in" values={{ seconds: secondsLeft }} components={{ strong: <strong /> }} />
             </Typography>
         </Alert>
     );
