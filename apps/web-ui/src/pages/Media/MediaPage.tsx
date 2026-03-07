@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import useGetMedia from "../../hooks/useGetMedia";
 import { Box, Container, Fade, Grid, Stack, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import useConfig from "../../hooks/useConfig";
 import { useEffect, useMemo, useState } from "react";
 import MediaPageBreadcrumbs from "./components/MediaPageBreadcrumbs";
@@ -31,6 +32,7 @@ function MediaPage() {
             : null;
     const formatDate = useDateFormat();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const mediaClubAverageScore: string = useMemo(() => {
         if (anilistUsers === undefined || anilistUsers.length === 0) {
@@ -72,29 +74,29 @@ function MediaPage() {
                     <MediaPageBreadcrumbs mediaInfo={media} />
                     <Box>
                         <AnilistChip
-                            label="Anilist Page"
+                            label={t('media_page.anilist_page_label')}
                             href={media?.siteUrl}
-                            ariaLabel="Visit Anilist site for the currently selected media"
+                            ariaLabel={t('media_page.anilist_page_aria')}
                         />
                     </Box>
                     <Grid container spacing={2}>
                         <Grid size={isMobile ? 12 : 6}>
                             <MediaScoreImageBox
                                 mediaSrc={media?.coverImage.extraLarge ?? ''}
-                                titleText="Anilist Average Score"
+                                titleText={t('media_page.anilist_avg_score')}
                                 scoreText={`${media?.averageScore?.toString() ?? '-'} / 100`}
                             />
                         </Grid>
                         <Grid size={isMobile ? 12 : 6}>
                             <MediaScoreImageBox
                                 mediaSrc={'/yomogi.svg'}
-                                titleText="Media Club Average Score"
+                                titleText={t('media_page.club_avg_score')}
                                 scoreText={`${mediaClubAverageScore} / 100`}
                             />
                         </Grid>
                         <Grid size={isMobile ? 12 : 6}>
                             <MediaMemberInfoStack>
-                                <Typography variant="overline" color="text.secondary">Media Club start date</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_page.club_start_date')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">
                                     {media?.media_club_date_started ? formatDate(media.media_club_date_started) : '-'}
                                 </Typography>
@@ -102,9 +104,9 @@ function MediaPage() {
                         </Grid>
                         <Grid size={isMobile ? 12 : 6}>
                             <MediaMemberInfoStack>
-                                <Typography variant="overline" color="text.secondary">Media Club end date</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_page.club_end_date')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">
-                                    {media?.media_club_date_finished ? formatDate(media.media_club_date_finished) : 'Currently watching (`･ω･´)'}
+                                    {media?.media_club_date_finished ? formatDate(media.media_club_date_finished) : t('media_page.currently_watching')}
                                 </Typography>
                             </MediaMemberInfoStack>
                         </Grid>

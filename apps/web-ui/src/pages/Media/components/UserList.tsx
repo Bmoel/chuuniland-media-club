@@ -1,6 +1,7 @@
 import { Avatar, Box, Stack, Tooltip, Typography } from "@mui/material";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import { useCallback, useMemo, type Dispatch, type SetStateAction } from "react";
+import { useTranslation } from "react-i18next";
 import MemberSkeleton from "../../../components/skeleton/MemberSkeleton";
 import useConfig from "../../../hooks/useConfig";
 import UserListStack from "./UserListStack";
@@ -17,6 +18,7 @@ function UserList(props: UserListInterface) {
     const { anilistUsers, selectedUser, setSelectedUser, dataIsLoading } = props;
 
     const { isMobile } = useConfig();
+    const { t } = useTranslation();
 
     const onUserSelection = useCallback((newUser: MediaAnilistUser) => {
         if (setSelectedUser === undefined) {
@@ -50,10 +52,10 @@ function UserList(props: UserListInterface) {
         <Box>
             <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="overline" sx={{ color: 'text.secondary' }}>
-                    Members
+                    {t('user_list.members')}
                 </Typography>
                 <Tooltip
-                    title="Will show available members who have this media in their Anilist"
+                    title={t('user_list.members_tooltip')}
                     placement={isMobile ? 'bottom-end' : 'right-start'}
                     enterTouchDelay={0}
                 >
@@ -68,7 +70,7 @@ function UserList(props: UserListInterface) {
                     fontStyle="italic"
                     sx={{ opacity: 0.5, p: 2 }}
                 >
-                    No members found (╯°□°)╯︵ ┻━┻
+                    {t('user_list.no_members')}
                 </Typography>
             ) : (
                 <UserListStack>

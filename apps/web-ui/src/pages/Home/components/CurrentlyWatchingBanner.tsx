@@ -2,6 +2,7 @@ import { Box, Chip, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import type { Media } from "../../../types/media.types";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     media: Media;
@@ -10,9 +11,10 @@ type Props = {
 function CurrentlyWatchingBanner({ media }: Props) {
     const navigate = useNavigate();
     const getPreferredName = usePreferredMediaName();
+    const { t } = useTranslation();
 
     const backgroundImage = media.bannerImage ?? media.coverImage.extraLarge;
-    const label = media.type === "MANGA" ? "Currently Reading" : "Currently Watching";
+    const label = media.type === "MANGA" ? t('banner.currently_reading') : t('banner.currently_watching');
 
     return (
         <Box

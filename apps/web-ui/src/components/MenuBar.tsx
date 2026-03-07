@@ -4,12 +4,14 @@ import { useCallback, useMemo, useState } from 'react';
 import useConfig from '../hooks/useConfig';
 import { AppRegistration, Home, GitHub, BarChart } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 export default function MenuBar() {
     const [sideMenuOpen, setSideMenuOpen] = useState<boolean>(false);
 
     const { isMobile, screenWidth } = useConfig();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const listCss: SxProps<Theme> = useMemo(() => {
         if (isMobile) {
@@ -32,14 +34,14 @@ export default function MenuBar() {
                             size="large"
                             edge="start"
                             color="inherit"
-                            aria-label="menu"
+                            aria-label={t('nav.menu_aria')}
                             sx={{ mr: 2 }}
                             onClick={() => setSideMenuOpen(true)}
                         >
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            Media Club
+                            {t('common.media_club')}
                         </Typography>
                     </Toolbar>
                 </AppBar>
@@ -59,7 +61,7 @@ export default function MenuBar() {
                             <Avatar alt='chuuniland logo' src="/subaru.svg" />
                         </ListItemAvatar>
                         <ListItemText>
-                            <Typography fontWeight="bold">Media Club</Typography>
+                            <Typography fontWeight="bold">{t('common.media_club')}</Typography>
                         </ListItemText>
                     </ListItem>
                     <Divider sx={{ mx: 1 }} />
@@ -71,7 +73,7 @@ export default function MenuBar() {
                             <ListItemIcon>
                                 <Home color='info' />
                             </ListItemIcon>
-                            <ListItemText primary={'Home'} />
+                            <ListItemText primary={t('common.home')} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem
@@ -82,7 +84,7 @@ export default function MenuBar() {
                             <ListItemIcon>
                                 <BarChart color='success' />
                             </ListItemIcon>
-                            <ListItemText primary="Stats" />
+                            <ListItemText primary={t('nav.stats')} />
                         </ListItemButton>
                     </ListItem>
                     <ListItem
@@ -93,7 +95,7 @@ export default function MenuBar() {
                             <ListItemIcon>
                                 <AppRegistration color='warning' />
                             </ListItemIcon>
-                            <ListItemText primary="Registration" />
+                            <ListItemText primary={t('nav.registration')} />
                         </ListItemButton>
                     </ListItem>
                 </List>
@@ -107,7 +109,7 @@ export default function MenuBar() {
                         label="Github"
                         color="primary"
                         variant="outlined"
-                        aria-label="Visit github repository"
+                        aria-label={t('nav.github_aria')}
                         clickable
                     />
                 </Box>

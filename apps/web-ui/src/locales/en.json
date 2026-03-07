@@ -1,0 +1,102 @@
+{
+  "common": {
+    "loading": "Loading... (-■_■)",
+    "home": "Home",
+    "media_club": "Media Club",
+    "anime": "Anime",
+    "manga": "Manga"
+  },
+  "nav": {
+    "stats": "Stats",
+    "registration": "Registration",
+    "github_aria": "Visit github repository",
+    "menu_aria": "menu"
+  },
+  "banner": {
+    "currently_watching": "Currently Watching",
+    "currently_reading": "Currently Reading"
+  },
+  "media_info_drawer": {
+    "anime_start_date": "Anime start date",
+    "manga_start_date": "Manga/Novel start date",
+    "club_start_date": "Media Club start date",
+    "club_end_date": "Media Club end date",
+    "anilist_avg_score": "Anilist average score",
+    "animation_studios": "Animation Studios"
+  },
+  "rate_limit": {
+    "retry_now": "Retry Now",
+    "retrying_in": "AniList rate limit reached — retrying in",
+    "retry_in": "AniList rate limit reached — retry in"
+  },
+  "auth": {
+    "removed_success": "Successfully removed profile, redirecting...",
+    "synced_success": "Successfully synced profile, redirecting...",
+    "remove_failed": "Failed to remove profile, redirecting...",
+    "sync_failed": "Failed to sync profile, redirecting...",
+    "invalid_session": "Invalid session, please try again...",
+    "auth_error": "Authentication error, redirecting...",
+    "removing": "Removing your AniList profile...",
+    "syncing": "Syncing your AniList profile..."
+  },
+  "registration": {
+    "hero_title": "JOIN THE CLUB",
+    "hero_subtitle": "Your Anilist journey, shared with friends.",
+    "link_title": "Link your Anilist Account",
+    "link_description": "By registering, we'll automatically fetch your <strong>scores and reviews</strong> directly from Anilist. No manual entry required — just connect and then navigate to any of the media in the home page to see how you compare to others.",
+    "transparency_title": "Transparency Notice",
+    "transparency_body": "We store your <strong>Anilist ID</strong> in our database to keep your profile synced. This is publically accessible info, and is the only thing we store to fetch your data from Anilist.",
+    "connect_button": "Connect with Anilist",
+    "remove_link": "I want to remove myself from the media club",
+    "dialog_title": "Removal Confirmation",
+    "dialog_body": "Are you sure you want to remove yourself?",
+    "cancel": "Cancel",
+    "confirm_removal": "Confirm Removal"
+  },
+  "stats": {
+    "page_title": "Stats",
+    "completed": "Completed",
+    "watching": "Watching",
+    "anilist_rankings_tab": "Anilist Rankings",
+    "timeline_tab": "Club Timeline"
+  },
+  "media_page": {
+    "anilist_page_label": "Anilist Page",
+    "anilist_page_aria": "Visit Anilist site for the currently selected media",
+    "anilist_avg_score": "Anilist Average Score",
+    "club_avg_score": "Media Club Average Score",
+    "club_start_date": "Media Club start date",
+    "club_end_date": "Media Club end date",
+    "currently_watching": "Currently watching (`･ω･´)"
+  },
+  "timeline": {
+    "watching": "Watching",
+    "completed": "Completed",
+    "unknown_date": "Unknown date",
+    "started": "Started {{date}}"
+  },
+  "user_list": {
+    "members": "Members",
+    "members_tooltip": "Will show available members who have this media in their Anilist",
+    "no_members": "No members found (╯°□°)╯︵ ┻━┻"
+  },
+  "selected_user": {
+    "user_profile_label": "User Profile",
+    "user_profile_aria": "Visit anilist profile for the selected user",
+    "user_score": "USER SCORE",
+    "review_notes": "REVIEW & NOTES",
+    "no_notes": "No notes have been provided for this title",
+    "favorite_characters": "FAVORITE CHARACTERS",
+    "favorites_tooltip": "Favorite characters are cached and refreshed every Friday at 11 PM PST — check back then for the latest picks!",
+    "no_favorites": "No favorite characters found (´･_･`)",
+    "rate_limit": "AniList rate limit reached — retry in {{seconds}}s"
+  },
+  "language_selector": {
+    "ai_translated_tooltip": "AI translated"
+  },
+  "error": {
+    "title": "Oops! Something went wrong.",
+    "unexpected": "An unexpected error occurred.",
+    "try_again": "Try Again"
+  }
+}
