@@ -3,6 +3,7 @@ import RegistrationPageBreadcrumbs from "./components/RegistrationPageBreadcrumb
 import { useCallback, useState } from "react";
 import type { AuthMode } from "../Auth/AuthCallbackPage";
 import useConfig from "../../hooks/useConfig";
+import { Trans, useTranslation } from "react-i18next";
 
 const CLIENT_ID = import.meta.env.VITE_ANILIST_APP_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.VITE_ANILIST_APP_REDIRECT_URI;
@@ -11,6 +12,7 @@ function RegistrationPage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
 
     const { isMobile } = useConfig();
+    const { t } = useTranslation();
 
     const handleRedirect = useCallback((mode: AuthMode) => {
         const oauthState = crypto.randomUUID();
@@ -47,10 +49,10 @@ function RegistrationPage() {
                                 sx={{ height: '100%', position: 'relative', p: 4, textAlign: 'center' }}
                             >
                                 <Typography variant="h3" color="white" fontWeight="900" sx={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-                                    JOIN THE CLUB
+                                    {t('registration.hero_title')}
                                 </Typography>
                                 <Typography variant="h6" color="rgba(255,255,255,0.8)">
-                                    Your Anilist journey, shared with friends.
+                                    {t('registration.hero_subtitle')}
                                 </Typography>
                             </Stack>
                         </Box>
@@ -60,18 +62,15 @@ function RegistrationPage() {
                     <Stack spacing={3}>
                         <Box>
                             <Typography variant="h5" fontWeight="bold" gutterBottom>
-                                Link your Anilist Account
+                                {t('registration.link_title')}
                             </Typography>
                             <Typography variant="body1" color="text.secondary">
-                                By registering, we'll automatically fetch your <strong>scores and reviews</strong>
-                                &nbsp;directly from Anilist. No manual entry required — just connect and then navigate to
-                                any of the media in the home page to see how you compare to others.
+                                <Trans i18nKey="registration.link_description" components={{ strong: <strong /> }} />
                             </Typography>
                         </Box>
                         <Alert severity="info" variant="outlined" sx={{ borderRadius: 2 }}>
-                            <AlertTitle sx={{ fontWeight: 'bold' }}>Transparency Notice</AlertTitle>
-                            We store your <strong>Anilist ID</strong> in our database to keep your profile synced.
-                            This is publically accessible info, and is the only thing we store to fetch your data from Anilist.
+                            <AlertTitle sx={{ fontWeight: 'bold' }}>{t('registration.transparency_title')}</AlertTitle>
+                            <Trans i18nKey="registration.transparency_body" components={{ strong: <strong /> }} />
                         </Alert>
                         <Button
                             variant="contained"
@@ -88,7 +87,7 @@ function RegistrationPage() {
                                 backgroundColor: "#2b2d42"
                             }}
                         >
-                            Connect with Anilist
+                            {t('registration.connect_button')}
                         </Button>
                         <Link
                             component="button"
@@ -98,7 +97,7 @@ function RegistrationPage() {
                             fontWeight="bold"
                             onClick={() => setConfirmationModalOpen(true)}
                         >
-                            I want to remove myself from the media club
+                            {t('registration.remove_link')}
                         </Link>
                     </Stack>
                 </Grid>
@@ -111,16 +110,16 @@ function RegistrationPage() {
                 slotProps={{ paper: { sx: { borderRadius: 2, p: 1 } } }}
             >
                 <DialogTitle sx={{ fontWeight: 'bold' }}>
-                    Removal Confirmation
+                    {t('registration.dialog_title')}
                 </DialogTitle>
                 <DialogContent>
                     <Typography variant="body2" color="text.secondary">
-                        Are you sure you want to remove yourself?
+                        {t('registration.dialog_body')}
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{ flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: 1, px: 3, pb: 2 }}>
                     <Button onClick={() => setConfirmationModalOpen(false)} sx={{ color: 'grey.600' }}>
-                        Cancel
+                        {t('registration.cancel')}
                     </Button>
                     <Button
                         variant="contained"
@@ -128,7 +127,7 @@ function RegistrationPage() {
                         sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none', bgcolor: 'error.dark' } }}
                         onClick={() => handleRedirect('remove')}
                     >
-                        Confirm Removal
+                        {t('registration.confirm_removal')}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
 import useDateFormat from "../../../hooks/useDateFormat";
 import type { Media } from "../../../types/media.types";
+import { useTranslation } from "react-i18next";
 
 type TimelineRowProps = {
     media: Media;
@@ -14,10 +15,11 @@ function TimelineRow({ media, rank, active }: TimelineRowProps) {
     const getPreferredName = usePreferredMediaName();
     const formatDate = useDateFormat();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const startLabel = media.media_club_date_started
         ? formatDate(media.media_club_date_started)
-        : "Unknown date";
+        : t('timeline.unknown_date');
 
     const endLabel = media.media_club_date_finished
         ? formatDate(media.media_club_date_finished)
@@ -50,10 +52,10 @@ function TimelineRow({ media, rank, active }: TimelineRowProps) {
                     secondary={
                         <Box component="span" display="flex" flexDirection="column">
                             <Typography variant="caption" color={media.media_club_status === "watching" ? "info.main" : "success.main"} fontWeight="bold" component="span">
-                                {media.media_club_status === "watching" ? "Watching" : "Completed"}
+                                {media.media_club_status === "watching" ? t('timeline.watching') : t('timeline.completed')}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" component="span">
-                                {endLabel ? `${startLabel} — ${endLabel}` : `Started ${startLabel}`}
+                                {endLabel ? `${startLabel} — ${endLabel}` : t('timeline.started', { date: startLabel })}
                             </Typography>
                         </Box>
                     }

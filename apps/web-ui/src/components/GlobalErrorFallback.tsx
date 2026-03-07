@@ -1,8 +1,11 @@
 // components/GlobalErrorFallback.tsx
 import { Box, Typography, Button, Container } from '@mui/material';
 import type { FallbackProps } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
 export function GlobalErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+    const { t } = useTranslation();
+
     return (
         <Container maxWidth="md">
             <Box
@@ -17,12 +20,12 @@ export function GlobalErrorFallback({ error, resetErrorBoundary }: FallbackProps
                 }}
             >
                 <Typography variant="h3" color="error" gutterBottom>
-                    Oops! Something went wrong.
+                    {t('error.title')}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                     {error instanceof Error
                         ? error.message
-                        : (typeof error === 'string' ? error : "An unexpected error occurred.")}
+                        : (typeof error === 'string' ? error : t('error.unexpected'))}
                 </Typography>
 
                 <Button
@@ -31,7 +34,7 @@ export function GlobalErrorFallback({ error, resetErrorBoundary }: FallbackProps
                     onClick={resetErrorBoundary}
                     sx={{ mt: 2 }}
                 >
-                    Try Again
+                    {t('error.try_again')}
                 </Button>
             </Box>
         </Container>

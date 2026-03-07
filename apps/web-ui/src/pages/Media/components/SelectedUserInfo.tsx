@@ -1,6 +1,7 @@
 import {Avatar, Box, CircularProgress, Grid, Link, Stack, Tooltip, Typography} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useTranslation } from "react-i18next";
 import AnilistChip from "../../../components/AnilistChip";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import useConfig from "../../../hooks/useConfig";
@@ -15,6 +16,7 @@ interface SelectUserInfoProps {
 
 function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
     const { isMobile } = useConfig();
+    const { t } = useTranslation();
     const { characters, isLoading, rateLimitError } = useUserFavoriteCharacters({
         userId: selectedUser.user.id,
         mediaId,
@@ -46,14 +48,14 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
         if (rateLimitError) {
             return (
                 <Typography variant="body1" fontStyle="italic" color="warning.main">
-                    AniList rate limit reached — retry in {secondsLeft ?? rateLimitError.retryAfterSeconds}s
+                    {t('selected_user.rate_limit', { seconds: secondsLeft ?? rateLimitError.retryAfterSeconds })}
                 </Typography>
             );
         }
         if (characters.length === 0) {
             return (
                 <Typography variant="body1" fontStyle="italic" color="text.secondary">
-                    No favorite characters found (´･_･`)
+                    {t('selected_user.no_favorites')}
                 </Typography>
             );
         }
@@ -95,42 +97,42 @@ function SelectedUserInfo({ selectedUser, mediaId }: SelectUserInfoProps) {
                 ))}
             </Stack>
         );
-    }, [characters, isLoading, rateLimitError, secondsLeft]);
+    }, [characters, isLoading, rateLimitError, secondsLeft, t]);
 
     return (
         <>
             <Grid size={12}>
                 <AnilistChip
-                    label="User Profile"
+                    label={t('selected_user.user_profile_label')}
                     href={selectedUser.user.siteUrl}
-                    ariaLabel="Visit anilist profile for the selected user"
+                    ariaLabel={t('selected_user.user_profile_aria')}
                 />
             </Grid>
             <Grid size={isMobile ? 12 : 6}>
                 <MediaMemberInfoStack>
-                    <Typography variant="overline" color="text.secondary">USER SCORE</Typography>
+                    <Typography variant="overline" color="text.secondary">{t('selected_user.user_score')}</Typography>
                     <Typography variant="h2" color="primary">{selectedUser.score ?? '-'}</Typography>
                 </MediaMemberInfoStack>
             </Grid>
             <Grid size={isMobile ? 12 : 6}>
                 <MediaMemberInfoStack>
-                    <Typography variant="overline" color="text.secondary">REVIEW & NOTES</Typography>
+                    <Typography variant="overline" color="text.secondary">{t('selected_user.review_notes')}</Typography>
                     <Typography
                         variant="body1"
                         fontStyle="italic"
                         alignItems="center"
                         textAlign="center"
                     >
-                        {selectedUser.notes ?? "No notes have been provided for this title"}
+                        {selectedUser.notes ?? t('selected_user.no_notes')}
                     </Typography>
                 </MediaMemberInfoStack>
             </Grid>
             <Grid size={12}>
                 <MediaMemberInfoStack>
                     <Stack direction="row" alignItems="center" gap={0.5}>
-                        <Typography variant="overline" color="text.secondary">FAVORITE CHARACTERS</Typography>
+                        <Typography variant="overline" color="text.secondary">{t('selected_user.favorite_characters')}</Typography>
                         <Tooltip
-                            title="Favorite characters are cached and refreshed every Friday at 11 PM PST — check back then for the latest picks!"
+                            title={t('selected_user.favorites_tooltip')}
                             arrow
                             placement="top"
                             enterTouchDelay={0}

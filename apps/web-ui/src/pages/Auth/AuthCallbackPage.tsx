@@ -2,6 +2,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useRemoveAnilistUserMutation, useSyncAnilistUserMutation } from "../../api/mediaClub/mediaClubApi";
+import { useTranslation } from "react-i18next";
 
 export type AuthMode = 'sync' | 'remove';
 
@@ -15,6 +16,7 @@ function AuthCallbackPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const lastCallKey = useRef<string>("");
+    const { t } = useTranslation();
 
     const [syncUser] = useSyncAnilistUserMutation();
     const [removeUser] = useRemoveAnilistUserMutation();
@@ -23,40 +25,40 @@ function AuthCallbackPage() {
         try {
             if (mode === "remove") {
                 await removeUser({ code }).unwrap();
-                setLoadingText('Successfully removed profile, redirecting...');
+                setLoadingText(t('auth.removed_success'));
             } else {
                 await syncUser({ code }).unwrap();
-                setLoadingText('Successfully synced profile, redirecting...');
+                setLoadingText(t('auth.synced_success'));
             }
         } catch {
-            setLoadingText(`Failed to ${mode === "remove" ? 'remove' : 'sync'} profile, redirecting...`);
+            setLoadingText(mode === "remove" ? t('auth.remove_failed') : t('auth.sync_failed'));
         } finally {
             sessionStorage.removeItem('oauth_state');
             setTimeout(() => navigate('/'), 1500);
         }
-    }, [removeUser, syncUser, navigate]);
+    }, [removeUser, syncUser, navigate, t]);
 
     useEffect(() => {
         const code = searchParams.get('code');
         const stateParam = searchParams.get('state');
         const [mode, originalState] = stateParam?.split('_') || [];
         if (originalState !== sessionStorage.getItem('oauth_state') || !isValidAuthMode(mode)) {
-            setLoadingText('Invalid session, please try again...');
+            setLoadingText(t('auth.invalid_session'));
             setTimeout(() => navigate('/'), 1500);
             return;
         }
         if (!code) {
-            setLoadingText('Authentication error, redirecting...');
+            setLoadingText(t('auth.auth_error'));
             setTimeout(() => navigate('/'), 1500);
             return;
         }
         const currentCallKey = `${mode}-${code}`;
-        setLoadingText((mode === "remove" ? "Removing your AniList profile..." : "Syncing your AniList profile..."));
+        setLoadingText(mode === "remove" ? t('auth.removing') : t('auth.syncing'));
         if (lastCallKey.current !== currentCallKey) {
             lastCallKey.current = currentCallKey;
             handleAuth(code, mode);
         }
-    }, [handleAuth, navigate, searchParams]);
+    }, [handleAuth, navigate, searchParams, t]);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 10 }}>

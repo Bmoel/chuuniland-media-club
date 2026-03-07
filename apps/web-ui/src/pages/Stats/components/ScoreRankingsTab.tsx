@@ -2,6 +2,7 @@ import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemButton, ListItemTe
 import { useNavigate } from "react-router";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
 import type { ScoredMedia } from "../../../hooks/useClubStats";
+import { useTranslation } from "react-i18next";
 
 type ScoreRowProps = {
     media: ScoredMedia;
@@ -12,6 +13,7 @@ type ScoreRowProps = {
 function ScoreRow({ media, rank, active }: ScoreRowProps) {
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     return (
         <ListItem disablePadding divider sx={{ opacity: active ? 1 : 0.25, transition: "opacity 0.2s ease" }}>
@@ -48,7 +50,7 @@ function ScoreRow({ media, rank, active }: ScoreRowProps) {
                                 {media.averageScore} / 100
                             </Typography>
                             <Typography variant="caption" color="text.secondary" component="span">
-                                {media.type === "ANIME" ? "Anime" : "Manga"}
+                                {media.type === "ANIME" ? t('common.anime') : t('common.manga')}
                             </Typography>
                         </Box>
                     }

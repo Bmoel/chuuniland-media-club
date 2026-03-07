@@ -2,6 +2,7 @@ import { Box, Grid, Paper, Stack, Typography } from "@mui/material";
 import { Movie, MenuBook, CheckCircle, Visibility } from "@mui/icons-material";
 import type { ReactNode } from "react";
 import useConfig from "../../../hooks/useConfig";
+import { useTranslation } from "react-i18next";
 
 type StatCardProps = {
     icon: ReactNode;
@@ -35,22 +36,23 @@ type StatSummaryCardsProps = {
 
 function StatSummaryCards({ animeCount, mangaCount, completedCount, watchingCount }: StatSummaryCardsProps) {
     const { isMobile } = useConfig();
+    const { t } = useTranslation();
     const cardSize = isMobile ? 6 : 3;
 
     return (
         <Box overflow="hidden">
             <Grid container spacing={2}>
                 <Grid size={cardSize}>
-                    <StatCard icon={<Movie fontSize="large" />} label="Anime" value={animeCount} color="primary.main" />
+                    <StatCard icon={<Movie fontSize="large" />} label={t('common.anime')} value={animeCount} color="primary.main" />
                 </Grid>
                 <Grid size={cardSize}>
-                    <StatCard icon={<MenuBook fontSize="large" />} label="Manga" value={mangaCount} color="secondary.main" />
+                    <StatCard icon={<MenuBook fontSize="large" />} label={t('common.manga')} value={mangaCount} color="secondary.main" />
                 </Grid>
                 <Grid size={cardSize}>
-                    <StatCard icon={<CheckCircle fontSize="large" />} label="Completed" value={completedCount} color="success.main" />
+                    <StatCard icon={<CheckCircle fontSize="large" />} label={t('stats.completed')} value={completedCount} color="success.main" />
                 </Grid>
                 <Grid size={cardSize}>
-                    <StatCard icon={<Visibility fontSize="large" />} label="Watching" value={watchingCount} color="info.main" />
+                    <StatCard icon={<Visibility fontSize="large" />} label={t('stats.watching')} value={watchingCount} color="info.main" />
                 </Grid>
             </Grid>
         </Box>

@@ -11,6 +11,7 @@ seed:
 # Start everything: db → seed all tables → dev
 start:
 	$(MAKE) db
+	powershell -Command "Start-Sleep 3"
 	$(MAKE) seed
 	$(MAKE) dev
 

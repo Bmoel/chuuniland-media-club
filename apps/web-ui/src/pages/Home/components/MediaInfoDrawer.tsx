@@ -7,6 +7,7 @@ import type { MediaInfoDrawerType } from "../../../types/drawers.types";
 import useGetMedia from "../../../hooks/useGetMedia";
 import useDateFormat from "../../../hooks/useDateFormat";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
+import { useTranslation } from "react-i18next";
 
 interface MediaInfoDrawerProps {
     mediaInfoDrawer: MediaInfoDrawerType;
@@ -17,6 +18,7 @@ function MediaInfoDrawer({ mediaInfoDrawer, closeDrawer }: MediaInfoDrawerProps)
     const { isMobile } = useConfig();
     const formatDate = useDateFormat();
     const getPreferredName = usePreferredMediaName();
+    const { t } = useTranslation();
 
     const { media } = useGetMedia(mediaInfoDrawer?.id);
 
@@ -78,7 +80,7 @@ function MediaInfoDrawer({ mediaInfoDrawer, closeDrawer }: MediaInfoDrawerProps)
                         )}
                         {(typeof media.startDate.month === 'number') && (typeof media.startDate.day === 'number') && (typeof media.startDate.year === 'number') && (
                             <>
-                                <Typography variant="overline" color="text.secondary">{`${media.type === "ANIME" ? 'Anime' : 'Manga/Novel'} start date`}</Typography>
+                                <Typography variant="overline" color="text.secondary">{media.type === "ANIME" ? t('media_info_drawer.anime_start_date') : t('media_info_drawer.manga_start_date')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">
                                     {formatDate(new Date(media.startDate.year, media.startDate.month, media.startDate.day))}
                                 </Typography>
@@ -86,25 +88,25 @@ function MediaInfoDrawer({ mediaInfoDrawer, closeDrawer }: MediaInfoDrawerProps)
                         )}
                         {media.media_club_date_started && (
                             <>
-                                <Typography variant="overline" color="text.secondary">Media Club start date</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_info_drawer.club_start_date')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">{formatDate(media.media_club_date_started)}</Typography>
                             </>
                         )}
                         {media.media_club_date_finished && (
                             <>
-                                <Typography variant="overline" color="text.secondary">Media Club end date</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_info_drawer.club_end_date')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">{formatDate(media.media_club_date_finished)}</Typography>
                             </>
                         )}
                         {typeof media.averageScore === 'number' && (
                             <>
-                                <Typography variant="overline" color="text.secondary">Anilist average score</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_info_drawer.anilist_avg_score')}</Typography>
                                 <Typography variant="body1" fontWeight="bold">{`${media.averageScore} / 100`}</Typography>
                             </>
                         )}
                         {Array.isArray(media.studios.nodes) && media.studios.nodes.length > 0 && (
                             <>
-                                <Typography variant="overline" color="text.secondary">Animation Studios</Typography>
+                                <Typography variant="overline" color="text.secondary">{t('media_info_drawer.animation_studios')}</Typography>
                                 {media.studios.nodes.map((studioInfo, idx) => {
                                     return <Typography variant="body1" fontWeight="bold" key={`studio-name-${idx}`}>{studioInfo.name}</Typography>;
                                 })}

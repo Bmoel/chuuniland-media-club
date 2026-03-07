@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
 import { Info } from "@mui/icons-material";
 import useConfig from "../../hooks/useConfig";
@@ -16,6 +17,7 @@ function HomePage() {
         id: undefined,
     });
 
+    const { t } = useTranslation();
     const { isMobile } = useConfig();
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
@@ -32,7 +34,7 @@ function HomePage() {
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 25 }}>
                 <CircularProgress size={80} sx={{ mb: 2 }} />
-                <Typography variant="h6" align="center">Loading... (-■_■)</Typography>
+                <Typography variant="h6" align="center">{t('common.loading')}</Typography>
             </Box>
         );
     }
