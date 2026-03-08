@@ -9,12 +9,12 @@ export type MediaClubApiResponse<T> = {
 
 //////////////////////////////////////////////////////////////////
 
-export type WatchStatus = "completed" | "watching";
+export type WatchStatus = "completed" | "watching" | "upcoming";
 
 export type MediaClubMedia = {
     id: number,
-    date_started: string,
-    date_finished: string,
+    date_started: string | null,
+    date_finished: string | null,
     status: WatchStatus,
 }
 

@@ -14,7 +14,8 @@
   },
   "banner": {
     "currently_watching": "Currently Watching",
-    "currently_reading": "Currently Reading"
+    "currently_reading": "Currently Reading",
+    "upcoming": "Upcoming"
   },
   "media_info_drawer": {
     "anime_start_date": "Anime start date",
