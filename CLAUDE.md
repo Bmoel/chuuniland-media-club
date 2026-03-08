@@ -17,11 +17,14 @@ apps/
 ### Frontend (`apps/web-ui`)
 
 ```bash
-npm run dev       # Start dev server (http://localhost:5173)
-npm run build     # Type-check and build with Vite/Rolldown
-npm run lint      # Run ESLint
-npm run lint-fix  # Auto-fix lint issues
-npm run preview   # Preview production build
+npm run dev        # Start dev server (http://localhost:5173)
+npm run watch      # Alias for dev (vite)
+npm run build      # Type-check and build with Vite/Rolldown
+npm run lint       # Run ESLint
+npm run lint-fix   # Auto-fix lint issues
+npm run preview    # Preview production build
+npm run test       # Run tests once (vitest run)
+npm run test:watch # Run tests in watch mode (vitest)
 ```
 
 ### Backend (`apps/media-club-api`)
@@ -35,6 +38,7 @@ make query URL=<path>    # cURL the running API
 cargo lambda watch       # Hot-reload Lambda server
 cargo lambda build       # Build for ARM64
 cargo lambda deploy      # Deploy to AWS Lambda
+cargo test               # Run unit tests
 ```
 
 Local API base URL: `http://localhost:9000/lambda-url/media-club-api/`
@@ -47,8 +51,9 @@ Local API base URL: `http://localhost:9000/lambda-url/media-club-api/`
 - **Redux Toolkit + RTK Query** for state and data fetching (two API clients: `anilistApi` for GraphQL, `mediaClubApi` for REST)
 - **Material-UI (MUI) v7** + Emotion for UI components and styling
 - **React Router v7** for routing
+- **i18next + react-i18next** for internationalization
 
-Routes: `/` (gallery), `/media/:id` (detail), `/registration`, `/auth/callback`
+Routes: `/` (gallery), `/media/:id` (detail), `/stats`, `/registration`, `/auth/callback`
 
 Data flow: Page components → custom hooks (`hooks/`) → RTK Query → API. Key hook: `useAnilistHomeMedia` merges data from both APIs.
 
@@ -69,10 +74,12 @@ Layered architecture: Handlers → Services → Repositories → DynamoDB/AniLis
 
 API routes:
 ```
-GET  /media       - Fetch all media items
-GET  /users       - Fetch all registered users
-POST /auth/sync   - Register AniList user (OAuth code exchange)
-POST /auth/remove - Unregister user
+GET  /                                    - Welcome/health check
+GET  /media                               - Fetch all media items
+GET  /users                               - Fetch all registered users
+GET  /users/{id}/favorites/{media_id}     - Get a user's favorite for a specific media item
+POST /auth/sync                           - Register AniList user (OAuth code exchange)
+POST /auth/remove                         - Unregister user
 ```
 
 All responses use `ApiResponse<T> { success, data, error }`. Custom `MyError` enum maps to HTTP status codes (502 for AniList/network errors, 500 for DB/internal errors).
