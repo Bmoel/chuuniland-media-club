@@ -79,3 +79,60 @@ impl IntoResponse for MyError {
         (status, body).into_response()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_anilist_error_display() {
+        let err = MyError::Anilist("upstream failure".to_string());
+        assert_eq!(err.to_string(), "AniList API error: upstream failure");
+    }
+
+    #[test]
+    fn test_database_error_display() {
+        let err = MyError::Database("connection refused".to_string());
+        assert_eq!(err.to_string(), "Database failure: connection refused");
+    }
+
+    #[test]
+    fn test_internal_error_display() {
+        let err = MyError::Internal("unexpected state".to_string());
+        assert_eq!(err.to_string(), "Internal server error: unexpected state");
+    }
+
+    #[test]
+    fn test_rate_limited_error_display() {
+        let err = MyError::RateLimited(30);
+        assert_eq!(err.to_string(), "Rate Limit error");
+    }
+
+    #[test]
+    fn test_anilist_error_returns_bad_gateway() {
+        let err = MyError::Anilist("test".to_string());
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::BAD_GATEWAY);
+    }
+
+    #[test]
+    fn test_database_error_returns_internal_server_error() {
+        let err = MyError::Database("test".to_string());
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[test]
+    fn test_internal_error_returns_internal_server_error() {
+        let err = MyError::Internal("test".to_string());
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
+    #[test]
+    fn test_rate_limited_error_returns_too_many_requests() {
+        let err = MyError::RateLimited(60);
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+    }
+}

@@ -63,3 +63,66 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_api_response_success_serialization() {
+        let response = ApiResponse {
+            success: true,
+            data: Some("hello"),
+            error: None,
+        };
+        let json = serde_json::to_string(&response).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed["success"], true);
+        assert_eq!(parsed["data"], "hello");
+        assert!(parsed["error"].is_null());
+    }
+
+    #[test]
+    fn test_api_response_error_serialization() {
+        let response: ApiResponse<()> = ApiResponse {
+            success: false,
+            data: None,
+            error: Some(ApiErrorDetail {
+                message: "Something went wrong".to_string(),
+                code: "500".to_string(),
+            }),
+        };
+        let json = serde_json::to_string(&response).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed["success"], false);
+        assert!(parsed["data"].is_null());
+        assert_eq!(parsed["error"]["message"], "Something went wrong");
+        assert_eq!(parsed["error"]["code"], "500");
+    }
+
+    #[test]
+    fn test_api_response_success_with_no_data() {
+        let response: ApiResponse<()> = ApiResponse {
+            success: true,
+            data: None,
+            error: None,
+        };
+        let json = serde_json::to_string(&response).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed["success"], true);
+        assert!(parsed["data"].is_null());
+        assert!(parsed["error"].is_null());
+    }
+
+    #[test]
+    fn test_api_response_with_numeric_data() {
+        let response = ApiResponse {
+            success: true,
+            data: Some(42u32),
+            error: None,
+        };
+        let json = serde_json::to_string(&response).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(parsed["data"], 42);
+    }
+}
