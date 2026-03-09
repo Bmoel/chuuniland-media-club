@@ -1,4 +1,5 @@
 use crate::errors::MyError;
+use crate::models::app::{PaginatedResponse, PaginationParams};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
@@ -21,7 +22,10 @@ pub struct MediaItem {
 
 #[async_trait]
 pub trait MediaRepository: Send + Sync {
-    async fn get_media_entries(&self) -> Result<Vec<MediaItem>, MyError>;
+    async fn get_media_entries(
+        &self,
+        params: PaginationParams,
+    ) -> Result<PaginatedResponse<MediaItem>, MyError>;
 }
 
 #[cfg(test)]

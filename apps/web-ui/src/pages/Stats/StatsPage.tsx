@@ -1,4 +1,4 @@
-import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Pagination, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, NavigateNext } from "@mui/icons-material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import ScoreRankingsTab from "./components/ScoreRankingsTab";
 import ClubTimelineTab from "./components/ClubTimelineTab";
 
 function StatsPage() {
+    const [page, setPage] = useState(1);
     const {
         animeCount,
         mangaCount,
@@ -22,7 +23,8 @@ function StatsPage() {
         isLoading,
         anilistRateLimitError,
         refetchAnilist,
-    } = useClubStats();
+        totalPages,
+    } = useClubStats(page);
 
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<number>(0);
@@ -101,6 +103,20 @@ function StatsPage() {
                             <ClubTimelineTab timeline={timeline} selectedGenre={selectedGenre} />
                         )}
                     </Paper>
+
+                    {totalPages > 1 && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Pagination
+                                count={totalPages}
+                                page={page}
+                                onChange={(_, value) => {
+                                    setPage(value);
+                                    setSelectedGenre(null);
+                                }}
+                                color="primary"
+                            />
+                        </Box>
+                    )}
                 </Stack>
             </Fade>
         </Container>

@@ -18,7 +18,15 @@ export type MediaClubMedia = {
     status: WatchStatus,
 }
 
-export type MediaClubMediaResponse = MediaClubApiResponse<Array<MediaClubMedia>>;
+export type PaginatedMediaData = {
+    items: MediaClubMedia[];
+    total_count: number;
+    page: number;
+    per_page: number;
+    total_pages: number;
+};
+
+export type MediaClubMediaResponse = MediaClubApiResponse<PaginatedMediaData>;
 
 export type MediaClubUser = {
     user_id: number,

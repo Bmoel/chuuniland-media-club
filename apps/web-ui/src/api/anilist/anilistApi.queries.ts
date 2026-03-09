@@ -1,6 +1,6 @@
 export const MediaInfoQuery = `
-query MediaInfoQuery($idIn: [Int], $sort: [MediaSort]) {
-  Page {
+query MediaInfoQuery($idIn: [Int], $sort: [MediaSort], $perPage: Int) {
+  Page(perPage: $perPage) {
     media(id_in: $idIn, sort: $sort) {
       id
       title {

@@ -16,10 +16,12 @@ export type ClubStats = {
     isLoading: boolean;
     anilistRateLimitError: AnilistRateLimitError | null;
     refetchAnilist: () => void;
+    totalPages: number;
+    totalCount: number;
 };
 
-function useClubStats(): ClubStats {
-    const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist } = useAnilistHomeMedia();
+function useClubStats(page = 1): ClubStats {
+    const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist, totalPages, totalCount } = useAnilistHomeMedia(page);
 
     const animeCount = useMemo(
         () => mediaList?.filter(m => m.type === "ANIME").length ?? 0,
@@ -85,6 +87,8 @@ function useClubStats(): ClubStats {
         isLoading: mediaListIsLoading,
         anilistRateLimitError,
         refetchAnilist,
+        totalPages,
+        totalCount,
     };
 }
 

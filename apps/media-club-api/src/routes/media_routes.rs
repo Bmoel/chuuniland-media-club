@@ -1,16 +1,18 @@
 use crate::errors::MyError;
-use crate::models::app::{ApiResponse, AppState};
+use crate::models::app::{ApiResponse, AppState, PaginatedResponse, PaginationParams};
 use crate::models::media::MediaItem;
+use axum::extract::Query;
 use axum::{extract::State, Json};
 
 pub async fn media_route(
     State(state): State<AppState>,
-) -> Result<Json<ApiResponse<Vec<MediaItem>>>, MyError> {
-    let media_entries = state.media_repository.get_media_entries().await?;
+    Query(params): Query<PaginationParams>,
+) -> Result<Json<ApiResponse<PaginatedResponse<MediaItem>>>, MyError> {
+    let paginated = state.media_repository.get_media_entries(params).await?;
 
     Ok(Json(ApiResponse {
         success: true,
-        data: Some(media_entries),
+        data: Some(paginated),
         error: None,
     }))
 }

@@ -4,21 +4,26 @@ import { useMediaClubMediaInfoQuery } from "../api/mediaClub/mediaClubApi";
 import type { Media } from "../types/media.types";
 import { isRateLimitError, type AnilistRateLimitError } from "../api/anilist/anilistApi.types";
 
-function useAnilistHomeMedia(): {
+const PER_PAGE = 25;
+
+function useAnilistHomeMedia(page = 1): {
     mediaList: Media[] | undefined;
     mediaListIsLoading: boolean;
     anilistRateLimitError: AnilistRateLimitError | null;
     refetchAnilist: () => void;
+    totalPages: number;
+    totalCount: number;
 } {
-    const {data: mediaClubMediaInfo, isLoading} = useMediaClubMediaInfoQuery(undefined);
+    const {data: paginatedMedia, isLoading} = useMediaClubMediaInfoQuery({ page, perPage: PER_PAGE });
 
     const {data: anilistMediaInfo, error: anilistError, refetch: refetchAnilist} = useAnilistMediaInfoQuery(
         {
-            idIn: mediaClubMediaInfo?.map(mediaEntry => mediaEntry.id.toString()) ?? [],
+            idIn: paginatedMedia?.items.map(mediaEntry => mediaEntry.id.toString()) ?? [],
             sort: 'TITLE_ENGLISH',
+            perPage: PER_PAGE,
         },
         {
-            skip: !mediaClubMediaInfo
+            skip: !paginatedMedia
         }
     );
 
@@ -26,9 +31,9 @@ function useAnilistHomeMedia(): {
         isRateLimitError(anilistError) ? anilistError : null;
 
     const mediaClubMediaMap = useMemo(() => {
-        if (!mediaClubMediaInfo) return undefined;
-        return new Map(mediaClubMediaInfo.map(m => [m.id, m]));
-    }, [mediaClubMediaInfo]);
+        if (!paginatedMedia) return undefined;
+        return new Map(paginatedMedia.items.map(m => [m.id, m]));
+    }, [paginatedMedia]);
 
     const mediaList = useMemo(() => {
         if (!anilistMediaInfo || !mediaClubMediaMap) return undefined;
@@ -45,7 +50,14 @@ function useAnilistHomeMedia(): {
         });
     }, [anilistMediaInfo, mediaClubMediaMap]);
 
-    return {mediaList, mediaListIsLoading: isLoading, anilistRateLimitError, refetchAnilist};
+    return {
+        mediaList,
+        mediaListIsLoading: isLoading,
+        anilistRateLimitError,
+        refetchAnilist,
+        totalPages: paginatedMedia?.total_pages ?? 1,
+        totalCount: paginatedMedia?.total_count ?? 0,
+    };
 }
 
 export default useAnilistHomeMedia;

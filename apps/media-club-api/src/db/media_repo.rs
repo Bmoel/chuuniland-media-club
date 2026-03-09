@@ -1,4 +1,5 @@
 use crate::errors::MyError;
+use crate::models::app::{PaginatedResponse, PaginationParams};
 use crate::models::media::MediaItem;
 use crate::models::media::MediaRepository;
 use async_trait::async_trait;
@@ -21,7 +22,10 @@ impl MediaRepo {
 
 #[async_trait]
 impl MediaRepository for MediaRepo {
-    async fn get_media_entries(&self) -> Result<Vec<MediaItem>, MyError> {
+    async fn get_media_entries(
+        &self,
+        params: PaginationParams,
+    ) -> Result<PaginatedResponse<MediaItem>, MyError> {
         let result = self
             .client
             .scan()
@@ -30,9 +34,26 @@ impl MediaRepository for MediaRepo {
             .await
             .map_err(|e| MyError::Database(format!("DynamoDB Scan Error: {}", e)))?;
 
-        let items: Vec<MediaItem> = serde_dynamo::from_items(result.items.unwrap_or_default())
-            .map_err(|e| MyError::Internal(format!("Serialization error: {}", e)))?;
+        let mut all_items: Vec<MediaItem> =
+            serde_dynamo::from_items(result.items.unwrap_or_default())
+                .map_err(|e| MyError::Internal(format!("Serialization error: {}", e)))?;
 
-        Ok(items)
+        all_items.sort_by_key(|m| m.id);
+
+        let total_count = all_items.len();
+        let per_page = params.per_page.clamp(1, 25) as usize;
+        let page = params.page.max(1) as usize;
+        let total_pages = total_count.div_ceil(per_page).max(1) as u32;
+
+        let skip = (page - 1) * per_page;
+        let items = all_items.into_iter().skip(skip).take(per_page).collect();
+
+        Ok(PaginatedResponse {
+            items,
+            total_count,
+            page: page as u32,
+            per_page: per_page as u32,
+            total_pages,
+        })
     }
 }

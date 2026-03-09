@@ -46,6 +46,7 @@ export type AnilistMediaInfoResponseData = {
 export type AnilistMediaInfoRequest = {
     idIn: string[];
     sort: string;
+    perPage: number;
 }
 
 export type AnilistMediaInfoResponse = AnilistResponse<AnilistMediaInfoResponseData>;

@@ -32,6 +32,8 @@ function mockMediaList(mediaList: Media[] | undefined, extra = {}) {
         mediaListIsLoading: false,
         anilistRateLimitError: null,
         refetchAnilist: vi.fn(),
+        totalPages: 1,
+        totalCount: mediaList?.length ?? 0,
         ...extra,
     });
 }
