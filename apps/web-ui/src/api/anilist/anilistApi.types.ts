@@ -111,4 +111,13 @@ export type AnilistRateLimitError = {
     retryAfterSeconds: number;
 };
 
+export function isRateLimitError(error: unknown): error is AnilistRateLimitError {
+    return (
+        typeof error === 'object' &&
+        error !== null &&
+        'isRateLimited' in error &&
+        (error as AnilistRateLimitError).isRateLimited === true
+    );
+}
+
 //////////////////////////////////////////////////////////////////

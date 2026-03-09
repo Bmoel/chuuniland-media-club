@@ -29,7 +29,7 @@ impl ThrottledClient {
             .json(&payload)
             .send()
             .await
-            .map_err(|_| MyError::Anilist("Failed to recieve anilist response".to_string()))?;
+            .map_err(|e| MyError::Anilist(format!("Failed to receive anilist response: {}", e)))?;
 
         res.json::<T>()
             .await
@@ -65,7 +65,7 @@ impl ThrottledClient {
         let res = rb
             .send()
             .await
-            .map_err(|_| MyError::Anilist("Failed to recieve anilist response".to_string()))?;
+            .map_err(|e| MyError::Anilist(format!("Failed to receive anilist response: {}", e)))?;
 
         if res.status() == reqwest::StatusCode::TOO_MANY_REQUESTS {
             let headers = res.headers();

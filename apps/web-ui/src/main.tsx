@@ -28,11 +28,11 @@ createRoot(document.getElementById('root')!).render(
       <ErrorBoundary FallbackComponent={GlobalErrorFallback} onReset={() => window.location.href = '/'}>
         <BrowserRouter>
           <Routes>
-            <Route path="*" element={<MenuWrapper><HomePage /></MenuWrapper>} />
             <Route path="/media/:id" element={<MenuWrapper><MediaPage /></MenuWrapper>} />
             <Route path="/stats" element={<MenuWrapper><StatsPage /></MenuWrapper>} />
             <Route path="/registration" element={<MenuWrapper><RegistrationPage /></MenuWrapper>} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route path="*" element={<MenuWrapper><HomePage /></MenuWrapper>} />
           </Routes>
         </BrowserRouter>
       </ErrorBoundary>

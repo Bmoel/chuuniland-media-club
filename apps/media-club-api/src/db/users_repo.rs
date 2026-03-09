@@ -28,7 +28,7 @@ impl UsersRepository for UsersRepo {
             .table_name(&self.table_name)
             .send()
             .await
-            .map_err(|e| MyError::Database(format!("DnyamoDB Scan Error: {}", e)))?;
+            .map_err(|e| MyError::Database(format!("DynamoDB Scan Error: {}", e)))?;
 
         let items: Vec<User> = serde_dynamo::from_items(result.items.unwrap_or_default())
             .map_err(|e| MyError::Internal(format!("Serialization error: {}", e)))?;
