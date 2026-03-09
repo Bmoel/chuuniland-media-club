@@ -35,7 +35,7 @@ function UserList(props: UserListInterface) {
         if (anilistUsers === undefined) {
             return undefined;
         }
-        return Array.from(anilistUsers)?.sort((a, b) => {
+        return [...anilistUsers].sort((a, b) => {
             return a.user?.name?.localeCompare(b.user?.name ?? '') ?? 1;
         });
     }, [anilistUsers]);
@@ -76,7 +76,7 @@ function UserList(props: UserListInterface) {
                 <UserListStack>
                     {sortedUsers.map((user) => (
                         <Box
-                            key={user?.user.name}
+                            key={user.user.id}
                             onClick={() => onUserSelection(user)}
                             sx={{
                                 textAlign: 'center',

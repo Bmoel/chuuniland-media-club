@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useAnilistMediaInfoQuery } from "../api/anilist/anilistApi";
 import { useMediaClubMediaInfoQuery } from "../api/mediaClub/mediaClubApi";
 import type { Media } from "../types/media.types";
-import type { AnilistRateLimitError } from "../api/anilist/anilistApi.types";
+import { isRateLimitError, type AnilistRateLimitError } from "../api/anilist/anilistApi.types";
 
 function useAnilistHomeMedia(): {
     mediaList: Media[] | undefined;
@@ -23,9 +23,7 @@ function useAnilistHomeMedia(): {
     );
 
     const anilistRateLimitError: AnilistRateLimitError | null =
-        (anilistError && typeof anilistError === 'object' && 'isRateLimited' in anilistError)
-            ? anilistError as AnilistRateLimitError
-            : null;
+        isRateLimitError(anilistError) ? anilistError : null;
 
     const mediaClubMediaMap = useMemo(() => {
         if (!mediaClubMediaInfo) return undefined;

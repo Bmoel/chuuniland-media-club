@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { useGetUserFavoritesQuery } from "../api/mediaClub/mediaClubApi.ts";
 import { useAnilistCharactersQuery } from "../api/anilist/anilistApi.ts";
-import type { AnilistCharacterInfo, AnilistRateLimitError } from "../api/anilist/anilistApi.types.ts";
+import { isRateLimitError, type AnilistCharacterInfo, type AnilistRateLimitError } from "../api/anilist/anilistApi.types.ts";
 
 interface Params {
     userId: number;
@@ -35,8 +35,8 @@ function useUserFavoriteCharacters({ userId, mediaId }: Params): Result {
         error: charactersError,
     } = useAnilistCharactersQuery(charactersArg);
 
-    const rateLimitError = isCharactersError && (charactersError as AnilistRateLimitError)?.isRateLimited
-        ? (charactersError as AnilistRateLimitError)
+    const rateLimitError = isCharactersError && isRateLimitError(charactersError)
+        ? charactersError
         : null;
 
     if (characterIds.length === 0) {
