@@ -3,30 +3,18 @@ import { useNavigate } from "react-router";
 import type { Media } from "../../../types/media.types";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
 import { useTranslation } from "react-i18next";
-import type { WatchStatus } from "../../../api/mediaClub/mediaClubApi.types";
 
 type Props = {
     media: Media;
-    status?: WatchStatus;
 };
 
-function CurrentlyWatchingBanner({ media, status = "watching" }: Props) {
+function CurrentlyWatchingBanner({ media }: Props) {
     const navigate = useNavigate();
     const getPreferredName = usePreferredMediaName();
     const { t } = useTranslation();
 
     const backgroundImage = media.bannerImage ?? media.coverImage.extraLarge;
-
-    let label: string;
-    if (status === "upcoming") {
-        label = t('banner.upcoming');
-    } else if (media.type === "MANGA") {
-        label = t('banner.currently_reading');
-    } else {
-        label = t('banner.currently_watching');
-    }
-
-    const chipColor = status === "upcoming" ? "#e91e8c" : undefined;
+    const label = media.type === "MANGA" ? t('banner.currently_reading') : t('banner.currently_watching');
 
     return (
         <Box
@@ -38,6 +26,7 @@ function CurrentlyWatchingBanner({ media, status = "watching" }: Props) {
                 borderRadius: 2,
                 overflow: "hidden",
                 cursor: "pointer",
+                mb: 3,
                 "&:hover .banner-overlay": {
                     opacity: 0.55,
                 },
@@ -82,7 +71,7 @@ function CurrentlyWatchingBanner({ media, status = "watching" }: Props) {
                     size="small"
                     sx={{
                         mb: 1,
-                        bgcolor: chipColor ?? "primary.main",
+                        bgcolor: "primary.main",
                         color: "primary.contrastText",
                         fontWeight: 600,
                         fontSize: "0.7rem",

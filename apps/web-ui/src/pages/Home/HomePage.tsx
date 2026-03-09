@@ -28,11 +28,6 @@ function HomePage() {
         [mediaList]
     );
 
-    const upcomingMedia = useMemo(
-        () => mediaList?.find(m => m.media_club_status === 'upcoming'),
-        [mediaList]
-    );
-
     const closeDrawer = useCallback(() => setMediaInfoDrawer({ id: undefined, isOpen: false }), []);
 
     if (mediaListIsLoading) {
@@ -55,18 +50,13 @@ function HomePage() {
     return (
         <>
             <Container maxWidth="lg">
-                {(watchingMedia || upcomingMedia) && (
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                        {watchingMedia && <CurrentlyWatchingBanner media={watchingMedia} />}
-                        {upcomingMedia && <CurrentlyWatchingBanner media={upcomingMedia} status="upcoming" />}
-                    </Box>
-                )}
+                {watchingMedia && <CurrentlyWatchingBanner media={watchingMedia} />}
                 <Zoom in timeout={350}>
                     <ImageList
                         cols={isMobile ? 2 : 3}
                         gap={isMobile ? 8 : 16}
                     >
-                        {mediaList?.filter(m => m.media_club_status !== 'watching' && m.media_club_status !== 'upcoming').map(media => {
+                        {mediaList?.filter(m => m.media_club_status !== 'watching').map(media => {
                             return (
                                 <ImageListItem key={media.id} className="element-slight-hover">
                                     <img
