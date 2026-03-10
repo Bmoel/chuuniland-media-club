@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAnilistMediaInfoQuery } from "../api/anilist/anilistApi";
 import { useMediaClubMediaInfoQuery } from "../api/mediaClub/mediaClubApi";
 import type { Media } from "../types/media.types";
@@ -6,32 +6,43 @@ import { isRateLimitError, type AnilistRateLimitError } from "../api/anilist/ani
 
 const PER_PAGE = 25;
 
-function useAnilistHomeMedia(page = 1): {
+function useAnilistHomeMedia(): {
     mediaList: Media[] | undefined;
     mediaListIsLoading: boolean;
+    isLoadingMore: boolean;
     anilistRateLimitError: AnilistRateLimitError | null;
     refetchAnilist: () => void;
-    totalPages: number;
-    totalCount: number;
+    loadMore: () => void;
+    hasMore: boolean;
 } {
-    const {data: allMediaClubMedia, isLoading} = useMediaClubMediaInfoQuery(undefined);
+    const [loadedPages, setLoadedPages] = useState(1);
 
-    const pageIds = useMemo(() => {
+    const { data: allMediaClubMedia, isLoading } = useMediaClubMediaInfoQuery(undefined);
+
+    const accumulatedIds = useMemo(() => {
         if (!allMediaClubMedia) return undefined;
-        const start = (page - 1) * PER_PAGE;
-        return allMediaClubMedia.slice(start, start + PER_PAGE).map(m => m.id.toString());
-    }, [allMediaClubMedia, page]);
+        return allMediaClubMedia.slice(0, loadedPages * PER_PAGE).map(m => m.id.toString());
+    }, [allMediaClubMedia, loadedPages]);
 
-    const {data: anilistMediaInfo, error: anilistError, refetch: refetchAnilist} = useAnilistMediaInfoQuery(
+    const {
+        data: anilistMediaInfo,
+        error: anilistError,
+        refetch: refetchAnilist,
+        isFetching: anilistIsFetching,
+    } = useAnilistMediaInfoQuery(
         {
-            idIn: pageIds ?? [],
+            idIn: accumulatedIds ?? [],
             sort: 'TITLE_ENGLISH',
-            perPage: PER_PAGE,
+            perPage: loadedPages * PER_PAGE,
         },
-        {
-            skip: !pageIds
-        }
+        { skip: !accumulatedIds }
     );
+
+    const hasMore = (allMediaClubMedia?.length ?? 0) > loadedPages * PER_PAGE;
+
+    const loadMore = useCallback(() => {
+        if (hasMore) setLoadedPages(p => p + 1);
+    }, [hasMore]);
 
     const anilistRateLimitError: AnilistRateLimitError | null =
         isRateLimitError(anilistError) ? anilistError : null;
@@ -56,16 +67,14 @@ function useAnilistHomeMedia(page = 1): {
         });
     }, [anilistMediaInfo, mediaClubMediaMap]);
 
-    const totalCount = allMediaClubMedia?.length ?? 0;
-    const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
-
     return {
         mediaList,
-        mediaListIsLoading: isLoading,
+        mediaListIsLoading: isLoading || (anilistIsFetching && !anilistMediaInfo),
+        isLoadingMore: anilistIsFetching && !!anilistMediaInfo,
         anilistRateLimitError,
         refetchAnilist,
-        totalPages,
-        totalCount,
+        loadMore,
+        hasMore,
     };
 }
 

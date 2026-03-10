@@ -1,6 +1,6 @@
-import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Pagination, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, NavigateNext } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import HomeBreadcrumb from "../../components/HomeBreadcrumb";
 import RateLimitAlert from "../../components/RateLimitAlert";
@@ -11,7 +11,6 @@ import ScoreRankingsTab from "./components/ScoreRankingsTab";
 import ClubTimelineTab from "./components/ClubTimelineTab";
 
 function StatsPage() {
-    const [page, setPage] = useState(1);
     const {
         animeCount,
         mangaCount,
@@ -21,10 +20,24 @@ function StatsPage() {
         scoreRankings,
         genreFrequency,
         isLoading,
+        isLoadingMore,
         anilistRateLimitError,
         refetchAnilist,
-        totalPages,
-    } = useClubStats(page);
+        loadMore,
+        hasMore,
+    } = useClubStats();
+
+    const sentinelRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sentinelRef.current || !hasMore || isLoadingMore) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) loadMore(); },
+            { threshold: 0.1 }
+        );
+        observer.observe(sentinelRef.current);
+        return () => observer.disconnect();
+    }, [hasMore, isLoadingMore, loadMore]);
 
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<number>(0);
@@ -104,19 +117,12 @@ function StatsPage() {
                         )}
                     </Paper>
 
-                    {totalPages > 1 && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <Pagination
-                                count={totalPages}
-                                page={page}
-                                onChange={(_, value) => {
-                                    setPage(value);
-                                    setSelectedGenre(null);
-                                }}
-                                color="primary"
-                            />
+                    {isLoadingMore && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                            <CircularProgress size={32} />
                         </Box>
                     )}
+                    <div ref={sentinelRef} />
                 </Stack>
             </Fade>
         </Container>

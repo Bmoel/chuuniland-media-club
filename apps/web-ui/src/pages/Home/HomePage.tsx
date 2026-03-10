@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Pagination, Typography, Zoom } from "@mui/material";
+import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
 import { Info } from "@mui/icons-material";
 import useConfig from "../../hooks/useConfig";
 import MediaInfoDrawer from "./components/MediaInfoDrawer";
@@ -16,13 +16,24 @@ function HomePage() {
         isOpen: false,
         id: undefined,
     });
-    const [page, setPage] = useState(1);
 
     const { t } = useTranslation();
     const { isMobile } = useConfig();
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
-    const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist, totalPages } = useAnilistHomeMedia(page);
+    const { mediaList, mediaListIsLoading, isLoadingMore, anilistRateLimitError, refetchAnilist, loadMore, hasMore } = useAnilistHomeMedia();
+
+    const sentinelRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!sentinelRef.current || !hasMore || isLoadingMore) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) loadMore(); },
+            { threshold: 0.1 }
+        );
+        observer.observe(sentinelRef.current);
+        return () => observer.disconnect();
+    }, [hasMore, isLoadingMore, loadMore]);
 
     const watchingMedia = useMemo(
         () => mediaList?.find(m => m.media_club_status === 'watching'),
@@ -93,16 +104,12 @@ function HomePage() {
                         }) ?? []}
                     </ImageList>
                 </Zoom>
-                {totalPages > 1 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 2 }}>
-                        <Pagination
-                            count={totalPages}
-                            page={page}
-                            onChange={(_, value) => setPage(value)}
-                            color="primary"
-                        />
+                {isLoadingMore && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+                        <CircularProgress size={32} />
                     </Box>
                 )}
+                <div ref={sentinelRef} />
             </Container>
             <MediaInfoDrawer
                 mediaInfoDrawer={mediaInfoDrawer}

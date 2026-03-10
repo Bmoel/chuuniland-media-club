@@ -30,10 +30,11 @@ function mockMediaList(mediaList: Media[] | undefined, extra = {}) {
     mockUseAnilistHomeMedia.mockReturnValue({
         mediaList,
         mediaListIsLoading: false,
+        isLoadingMore: false,
         anilistRateLimitError: null,
         refetchAnilist: vi.fn(),
-        totalPages: 1,
-        totalCount: mediaList?.length ?? 0,
+        loadMore: vi.fn(),
+        hasMore: false,
         ...extra,
     });
 }

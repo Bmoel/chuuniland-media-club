@@ -14,14 +14,15 @@ export type ClubStats = {
     scoreRankings: ScoredMedia[];
     genreFrequency: { genre: string; count: number }[];
     isLoading: boolean;
+    isLoadingMore: boolean;
     anilistRateLimitError: AnilistRateLimitError | null;
     refetchAnilist: () => void;
-    totalPages: number;
-    totalCount: number;
+    loadMore: () => void;
+    hasMore: boolean;
 };
 
-function useClubStats(page = 1): ClubStats {
-    const { mediaList, mediaListIsLoading, anilistRateLimitError, refetchAnilist, totalPages, totalCount } = useAnilistHomeMedia(page);
+function useClubStats(): ClubStats {
+    const { mediaList, mediaListIsLoading, isLoadingMore, anilistRateLimitError, refetchAnilist, loadMore, hasMore } = useAnilistHomeMedia();
 
     const animeCount = useMemo(
         () => mediaList?.filter(m => m.type === "ANIME").length ?? 0,
@@ -85,10 +86,11 @@ function useClubStats(page = 1): ClubStats {
         scoreRankings,
         genreFrequency,
         isLoading: mediaListIsLoading,
+        isLoadingMore,
         anilistRateLimitError,
         refetchAnilist,
-        totalPages,
-        totalCount,
+        loadMore,
+        hasMore,
     };
 }
 
