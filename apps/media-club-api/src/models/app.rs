@@ -7,35 +7,8 @@ use axum::{
     http::{header, StatusCode},
     response::{IntoResponse, Response},
 };
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::sync::Arc;
-
-const MAX_PER_PAGE: u32 = 25;
-
-fn default_page() -> u32 {
-    1
-}
-
-fn default_per_page() -> u32 {
-    MAX_PER_PAGE
-}
-
-#[derive(Debug, Deserialize)]
-pub struct PaginationParams {
-    #[serde(default = "default_page")]
-    pub page: u32,
-    #[serde(default = "default_per_page")]
-    pub per_page: u32,
-}
-
-#[derive(Serialize)]
-pub struct PaginatedResponse<T> {
-    pub items: Vec<T>,
-    pub total_count: usize,
-    pub page: u32,
-    pub per_page: u32,
-    pub total_pages: u32,
-}
 
 #[derive(Clone)]
 pub struct EnvironmentVariables {

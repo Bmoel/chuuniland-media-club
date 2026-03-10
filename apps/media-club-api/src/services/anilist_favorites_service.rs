@@ -1,4 +1,4 @@
-use crate::models::app::{AppState, PaginationParams};
+use crate::models::app::AppState;
 use crate::models::favorites::FavoritesPayload;
 use crate::{
     errors::MyError,
@@ -13,11 +13,8 @@ pub async fn get_user_favorites(
     state: &AppState,
     payload: FavoritesPayload,
 ) -> Result<FavoritesResponse, MyError> {
-    let media_club_media = state
-        .media_repository
-        .get_media_entries(PaginationParams { page: 1, per_page: 25 })
-        .await?;
-    let media_id_set: HashSet<i64> = media_club_media.items.iter().map(|item| item.id).collect();
+    let media_club_media = state.media_repository.get_media_entries().await?;
+    let media_id_set: HashSet<i64> = media_club_media.iter().map(|item| item.id).collect();
 
     Ok(get_favorite_characters(state, payload.user_id, payload.page, &media_id_set).await?)
 }

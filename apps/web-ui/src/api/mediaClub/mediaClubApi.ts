@@ -1,20 +1,19 @@
 import { baseApi } from "../baseApi";
 import { MEDIA_CLUB_MEDIA_TAG, MEDIA_CLUB_USERS_TAG, MEDIA_CLUB_FAVORITES_TAG } from "./mediaClubApi.tags";
-import type { MediaClubMediaResponse, PaginatedMediaData, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser, UserFavorites, UserFavoritesResponse } from "./mediaClubApi.types";
+import type { MediaClubMediaResponse, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser, UserFavorites, UserFavoritesResponse } from "./mediaClubApi.types";
 
 const BASE_URL = import.meta.env.VITE_MEDIA_CLUB_API_BASE_URL;
 
 const mediaClubApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
-        mediaClubMediaInfo: build.query<PaginatedMediaData, { page: number; perPage: number }>({
-            query: ({ page, perPage }) => ({
+        mediaClubMediaInfo: build.query<MediaClubMediaResponse['data'], undefined>({
+            query: () => ({
                 url: `${BASE_URL}/media`,
                 method: 'GET',
-                params: { page, per_page: perPage },
             }),
             providesTags: () => [MEDIA_CLUB_MEDIA_TAG],
             transformResponse: (response: MediaClubMediaResponse) => {
-                return response.data ?? { items: [], total_count: 0, page: 1, per_page: 25, total_pages: 1 };
+                return response.data ?? [];
             },
             transformErrorResponse: (response: {status: number, data: MediaClubMediaResponse}) => {
                 const errorData = response.data;
