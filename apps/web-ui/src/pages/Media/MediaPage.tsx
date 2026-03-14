@@ -6,7 +6,7 @@ import useConfig from "../../hooks/useConfig";
 import { useEffect, useMemo, useState } from "react";
 import MediaPageBreadcrumbs from "./components/MediaPageBreadcrumbs";
 import MediaScoreImageBox from "./components/MediaScoreImageBox";
-import { type AnilistRateLimitError, type MediaAnilistUser } from "../../api/anilist/anilistApi.types";
+import { type AnilistRateLimitError, isRateLimitError, type MediaAnilistUser } from "../../api/anilist/anilistApi.types";
 import useAnilistUsersMediaInfo from "../../hooks/useAnilistUsersMediaInfo";
 import UserList from "./components/UserList";
 import MediaMemberInfoStack from "./components/MediaMemberInfoStack";
@@ -26,10 +26,7 @@ function MediaPage() {
         !(media?.media_club_status === 'completed')
     );
 
-    const usersRateLimitError: AnilistRateLimitError | null =
-        (usersError && typeof usersError === 'object' && 'isRateLimited' in usersError)
-            ? usersError as AnilistRateLimitError
-            : null;
+    const usersRateLimitError: AnilistRateLimitError | null = isRateLimitError(usersError) ? usersError : null;
     const formatDate = useDateFormat();
     const navigate = useNavigate();
     const { t } = useTranslation();
