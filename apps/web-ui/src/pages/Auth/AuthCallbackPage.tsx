@@ -19,6 +19,10 @@ function AuthCallbackPage() {
     const redirectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { t } = useTranslation();
 
+    useEffect(() => {
+        document.title = t('common.media_club');
+    }, [t]);
+
     const [syncUser] = useSyncAnilistUserMutation();
     const [removeUser] = useRemoveAnilistUserMutation();
 

@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router";
 import useGetMedia from "../../hooks/useGetMedia";
+import usePreferredMediaName from "../../hooks/usePreferredMediaName";
 import { Box, Container, Fade, Grid, Stack, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import useConfig from "../../hooks/useConfig";
@@ -30,6 +31,7 @@ function MediaPage() {
     const formatDate = useDateFormat();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const getPreferredName = usePreferredMediaName();
 
     const mediaClubAverageScore: string = useMemo(() => {
         if (anilistUsers === undefined || anilistUsers.length === 0) {
@@ -52,6 +54,12 @@ function MediaPage() {
             navigate('/');
         }
     }, [media, mediaIsLoading, navigate, mediaRateLimitError]);
+
+    useEffect(() => {
+        if (media) {
+            document.title = `${getPreferredName(media.title)} | ${t('common.media_club')}`;
+        }
+    }, [media, getPreferredName, t]);
 
     if (mediaRateLimitError && !media) {
         return (

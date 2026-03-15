@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
 import { Info } from "@mui/icons-material";
@@ -18,6 +18,11 @@ function HomePage() {
     });
 
     const { t } = useTranslation();
+
+    useEffect(() => {
+        document.title = t('common.media_club');
+    }, [t]);
+
     const { isMobile } = useConfig();
     const getPreferredName = usePreferredMediaName();
     const navigate = useNavigate();
