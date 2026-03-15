@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router";
 import useGetMedia from "../../hooks/useGetMedia";
 import usePreferredMediaName from "../../hooks/usePreferredMediaName";
-import { Box, Container, Fade, Grid, Stack, Typography } from "@mui/material";
+import {Box, CircularProgress, Container, Fade, Grid, Stack, Typography} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import useConfig from "../../hooks/useConfig";
 import { useEffect, useMemo, useState } from "react";
@@ -69,6 +69,15 @@ function MediaPage() {
                     <RateLimitAlert key={mediaRateLimitError.retryAfterSeconds} error={mediaRateLimitError} onRetry={refetchAnilist} />
                 </Box>
             </Container>
+        );
+    }
+
+    if (mediaIsLoading) {
+        return (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 25 }}>
+                <CircularProgress size={80} sx={{ mb: 2 }} />
+                <Typography variant="h6" align="center">{t('common.loading')}</Typography>
+            </Box>
         );
     }
 
