@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, Avatar, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Stack, Typography } from "@mui/material";
 import RegistrationPageBreadcrumbs from "./components/RegistrationPageBreadcrumbs";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { AuthMode } from "../Auth/AuthCallbackPage";
 import useConfig from "../../hooks/useConfig";
 import { Trans, useTranslation } from "react-i18next";
@@ -13,6 +13,10 @@ function RegistrationPage() {
 
     const { isMobile } = useConfig();
     const { t } = useTranslation();
+
+    useEffect(() => {
+        document.title = `${t('nav.registration')} | ${t('common.media_club')}`;
+    }, [t]);
 
     const handleRedirect = useCallback((mode: AuthMode) => {
         const oauthState = crypto.randomUUID();

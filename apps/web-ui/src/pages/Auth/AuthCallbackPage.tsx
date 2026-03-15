@@ -16,7 +16,12 @@ function AuthCallbackPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const lastCallKey = useRef<string>("");
+    const redirectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const { t } = useTranslation();
+
+    useEffect(() => {
+        document.title = t('common.media_club');
+    }, [t]);
 
     const [syncUser] = useSyncAnilistUserMutation();
     const [removeUser] = useRemoveAnilistUserMutation();
@@ -39,17 +44,22 @@ function AuthCallbackPage() {
     }, [removeUser, syncUser, navigate, t]);
 
     useEffect(() => {
+        if (redirectTimeout.current) {
+            clearTimeout(redirectTimeout.current);
+            redirectTimeout.current = null;
+        }
+
         const code = searchParams.get('code');
         const stateParam = searchParams.get('state');
         const [mode, originalState] = stateParam?.split('_') || [];
         if (originalState !== sessionStorage.getItem('oauth_state') || !isValidAuthMode(mode)) {
             setLoadingText(t('auth.invalid_session'));
-            setTimeout(() => navigate('/'), 1500);
+            redirectTimeout.current = setTimeout(() => navigate('/'), 1500);
             return;
         }
         if (!code) {
             setLoadingText(t('auth.auth_error'));
-            setTimeout(() => navigate('/'), 1500);
+            redirectTimeout.current = setTimeout(() => navigate('/'), 1500);
             return;
         }
         const currentCallKey = `${mode}-${code}`;
@@ -58,6 +68,12 @@ function AuthCallbackPage() {
             lastCallKey.current = currentCallKey;
             handleAuth(code, mode);
         }
+
+        return () => {
+            if (redirectTimeout.current) {
+                clearTimeout(redirectTimeout.current);
+            }
+        };
     }, [handleAuth, navigate, searchParams, t]);
 
     return (

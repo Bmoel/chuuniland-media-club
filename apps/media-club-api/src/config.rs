@@ -40,7 +40,7 @@ pub async fn build_dynamo_client() -> Arc<Client> {
 }
 
 pub async fn startup_app_state() -> Result<AppState, MyError> {
-    let environtment_vars = get_environment_variables()?;
+    let environment_vars = get_environment_variables()?;
     let client = build_dynamo_client().await;
     let http_client = reqwest::Client::builder()
         .user_agent("MediaClub-API/1.0")
@@ -57,18 +57,18 @@ pub async fn startup_app_state() -> Result<AppState, MyError> {
     Ok(AppState {
         media_repository: Arc::new(MediaRepo::new(
             Arc::clone(&client),
-            environtment_vars.media_table_name.to_string(),
+            environment_vars.media_table_name.to_string(),
         )),
         users_repository: Arc::new(UsersRepo::new(
             Arc::clone(&client),
-            environtment_vars.users_table_name.to_string(),
+            environment_vars.users_table_name.to_string(),
         )),
         favorites_repository: Arc::new(DynamoFavoritesRepo::new(
             Arc::clone(&client),
-            environtment_vars.favorites_table_name.to_string(),
+            environment_vars.favorites_table_name.to_string(),
         )),
         anilist_client: Arc::new(throttled_client),
-        environment_variables: environtment_vars,
+        environment_variables: environment_vars,
     })
 }
 

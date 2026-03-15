@@ -1,6 +1,6 @@
 import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, NavigateNext } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import HomeBreadcrumb from "../../components/HomeBreadcrumb";
 import RateLimitAlert from "../../components/RateLimitAlert";
@@ -25,6 +25,11 @@ function StatsPage() {
     } = useClubStats();
 
     const { t } = useTranslation();
+
+    useEffect(() => {
+        document.title = `${t('stats.page_title')} | ${t('common.media_club')}`;
+    }, [t]);
+
     const [activeTab, setActiveTab] = useState<number>(0);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 

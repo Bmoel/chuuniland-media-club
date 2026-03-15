@@ -10,9 +10,9 @@ function useAnilistHomeMedia(): {
     anilistRateLimitError: AnilistRateLimitError | null;
     refetchAnilist: () => void;
 } {
-    const {data: mediaClubMediaInfo, isLoading} = useMediaClubMediaInfoQuery(undefined);
+    const {data: mediaClubMediaInfo, isLoading: mediaClubInfoLoading, isFetching: mediaClubInfoFetching} = useMediaClubMediaInfoQuery(undefined);
 
-    const {data: anilistMediaInfo, error: anilistError, refetch: refetchAnilist} = useAnilistMediaInfoQuery(
+    const {data: anilistMediaInfo, error: anilistError, refetch: refetchAnilist, isLoading: anilistIsLoading, isFetching: anilistIsFetching} = useAnilistMediaInfoQuery(
         {
             idIn: mediaClubMediaInfo?.map(mediaEntry => mediaEntry.id.toString()) ?? [],
             sort: 'TITLE_ENGLISH',
@@ -45,7 +45,12 @@ function useAnilistHomeMedia(): {
         });
     }, [anilistMediaInfo, mediaClubMediaMap]);
 
-    return {mediaList, mediaListIsLoading: isLoading, anilistRateLimitError, refetchAnilist};
+    return {
+        mediaList,
+        mediaListIsLoading: mediaClubInfoLoading || mediaClubInfoFetching || anilistIsLoading || anilistIsFetching,
+        anilistRateLimitError,
+        refetchAnilist
+    };
 }
 
 export default useAnilistHomeMedia;
