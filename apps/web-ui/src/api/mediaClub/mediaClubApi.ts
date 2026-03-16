@@ -60,6 +60,13 @@ const mediaClubApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: () => [MEDIA_CLUB_USERS_TAG],
         }),
+        getAccessToken: build.query<string, unknown>({
+            query: ({ code }) => ({
+                url: `${BASE_URL}/auth/token`,
+                method: 'POST',
+                body: { code },
+            })
+        }),
     }),
 });
 
@@ -69,4 +76,5 @@ export const {
     useGetUserFavoritesQuery,
     useSyncAnilistUserMutation,
     useRemoveAnilistUserMutation,
+    useLazyGetAccessTokenQuery,
 } = mediaClubApi;
