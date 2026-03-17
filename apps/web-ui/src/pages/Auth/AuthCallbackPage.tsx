@@ -8,8 +8,6 @@ import {
 } from "../../api/mediaClub/mediaClubApi";
 import { useTranslation } from "react-i18next";
 import {jwtDecode} from "jwt-decode";
-import {ANILIST_ACCESS_TOKEN_KEY} from "../../constants/storage.constants.ts";
-
 export type AuthMode = 'sync' | 'remove' | 'login';
 
 const isValidAuthMode = (mode: string | null): mode is AuthMode => {
@@ -45,10 +43,8 @@ function AuthCallbackPage() {
                 const token = await fetchAccessToken({ code }).unwrap();
                 const decodedToken = jwtDecode(token);
                 const expiration = decodedToken.exp ?? 180;
-                localStorage.setItem(ANILIST_ACCESS_TOKEN_KEY, JSON.stringify({
-                    value: token,
-                    expiry: (new Date()).getTime() + (expiration * 1000),
-                }));
+                //TODO: Do something with token and expiration. Whether storing in browser memory or backend implementation
+                console.log(expiration);
                 setLoadingText(t('auth.login_success'));
             }
         } catch {

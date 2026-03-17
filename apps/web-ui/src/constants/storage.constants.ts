@@ -1,1 +1,0 @@
-export const ANILIST_ACCESS_TOKEN_KEY: string = 'ANILIST_ACCESS_TOKEN';
