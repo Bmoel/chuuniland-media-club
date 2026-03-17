@@ -1,12 +1,7 @@
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct AuthSyncPayload {
-    pub code: String,
-}
-
-#[derive(Deserialize)]
-pub struct AuthRemovePayload {
+pub struct GenericAuthPayload {
     pub code: String,
 }
 
@@ -52,14 +47,14 @@ mod tests {
     #[test]
     fn test_auth_sync_payload_deserialization() {
         let json = r#"{"code": "auth_code_123"}"#;
-        let payload: AuthSyncPayload = serde_json::from_str(json).unwrap();
+        let payload: GenericAuthPayload = serde_json::from_str(json).unwrap();
         assert_eq!(payload.code, "auth_code_123");
     }
 
     #[test]
     fn test_auth_remove_payload_deserialization() {
         let json = r#"{"code": "remove_code_456"}"#;
-        let payload: AuthRemovePayload = serde_json::from_str(json).unwrap();
+        let payload: GenericAuthPayload = serde_json::from_str(json).unwrap();
         assert_eq!(payload.code, "remove_code_456");
     }
 

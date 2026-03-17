@@ -2,6 +2,10 @@ use crate::services::anilist_auth_service;
 use crate::{errors::MyError, models::app::AppState};
 use axum::extract::State;
 
+pub async fn get_access_token(state: State<AppState>, auth_code: String) -> Result<String, MyError> {
+    anilist_auth_service::exchange_code_for_token(&state, &auth_code).await
+}
+
 pub async fn sync_user_profile(state: State<AppState>, auth_code: String) -> Result<(), MyError> {
     let user_id = query_anilist_api_for_user_id(&state, &auth_code).await?;
     state.users_repository.add_user(&user_id).await?;

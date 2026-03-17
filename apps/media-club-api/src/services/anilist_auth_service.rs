@@ -11,7 +11,6 @@ pub async fn exchange_code_for_token(state: &AppState, auth_code: &str) -> Resul
         "code": auth_code,
     });
 
-    // Use post_raw_json because this isn't a GraphQL query
     let data: TokenResponse = state
         .anilist_client
         .post_raw_json(ANILIST_AUTH_URL, payload)
