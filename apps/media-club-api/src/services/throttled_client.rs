@@ -31,6 +31,13 @@ impl ThrottledClient {
             .await
             .map_err(|e| MyError::Anilist(format!("Failed to receive anilist response: {}", e)))?;
 
+        if !res.status().is_success() {
+            return Err(MyError::Anilist(format!(
+                "API returned error status: {}",
+                res.status()
+            )));
+        }
+
         res.json::<T>()
             .await
             .map_err(|e| MyError::Internal(format!("Parse error: {}", e)))

@@ -22,6 +22,12 @@ pub enum MyError {
 
     #[error("Rate Limit error")]
     RateLimited(u64),
+
+    #[error("Conflict: {0}")]
+    Conflict(String),
+
+    #[error("Not found: {0}")]
+    NotFound(String),
 }
 
 impl IntoResponse for MyError {
@@ -47,7 +53,7 @@ impl IntoResponse for MyError {
                 "Media Club API failed".into(),
                 msg.clone(),
             ),
-            MyError::RateLimited(ref time_seconds) => (
+            MyError::RateLimited(time_seconds) => (
                 StatusCode::TOO_MANY_REQUESTS,
                 format!(
                     "Anilist API Rate Limit hit, please wait {} seconds to retry",
@@ -57,6 +63,16 @@ impl IntoResponse for MyError {
                     "Anilist API Rate Limit hit, please wait {} seconds to retry",
                     time_seconds
                 ),
+            ),
+            MyError::Conflict(ref msg) => (
+                StatusCode::CONFLICT,
+                msg.clone(),
+                msg.clone(),
+            ),
+            MyError::NotFound(ref msg) => (
+                StatusCode::NOT_FOUND,
+                msg.clone(),
+                msg.clone(),
             ),
         };
 
@@ -134,5 +150,31 @@ mod tests {
         let err = MyError::RateLimited(60);
         let response = err.into_response();
         assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
+    }
+
+    #[test]
+    fn test_conflict_error_display() {
+        let err = MyError::Conflict("User already exists".to_string());
+        assert_eq!(err.to_string(), "Conflict: User already exists");
+    }
+
+    #[test]
+    fn test_conflict_error_returns_conflict() {
+        let err = MyError::Conflict("User already exists".to_string());
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::CONFLICT);
+    }
+
+    #[test]
+    fn test_not_found_error_display() {
+        let err = MyError::NotFound("User does not exist".to_string());
+        assert_eq!(err.to_string(), "Not found: User does not exist");
+    }
+
+    #[test]
+    fn test_not_found_error_returns_not_found() {
+        let err = MyError::NotFound("User does not exist".to_string());
+        let response = err.into_response();
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }

@@ -22,6 +22,8 @@ impl MediaRepo {
 #[async_trait]
 impl MediaRepository for MediaRepo {
     async fn get_media_entries(&self) -> Result<Vec<MediaItem>, MyError> {
+        // NOTE: DynamoDB scan reads at most 1MB per request. This is fine for a small
+        // media club catalogue, but would need pagination for larger datasets.
         let result = self
             .client
             .scan()

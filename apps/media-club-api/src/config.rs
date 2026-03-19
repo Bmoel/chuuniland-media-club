@@ -47,7 +47,7 @@ pub async fn startup_app_state() -> Result<AppState, MyError> {
         .tls_backend_rustls()
         .timeout(std::time::Duration::from_secs(10))
         .build()
-        .map_err(|_e| MyError::Internal("Failed to establish http client".into()))?;
+        .map_err(|e| MyError::Internal(format!("Failed to establish http client: {}", e)))?;
     let quota =
         Quota::per_minute(NonZeroU32::new(30).unwrap()).allow_burst(NonZeroU32::new(10).unwrap());
     let limiter = RateLimiter::direct(quota);

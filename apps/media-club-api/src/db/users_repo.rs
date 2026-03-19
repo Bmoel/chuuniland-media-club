@@ -22,6 +22,8 @@ impl UsersRepo {
 #[async_trait]
 impl UsersRepository for UsersRepo {
     async fn get_users(&self) -> Result<Vec<User>, MyError> {
+        // NOTE: DynamoDB scan reads at most 1MB per request. This is fine for a small
+        // media club membership, but would need pagination for larger datasets.
         let result = self
             .client
             .scan()
@@ -55,7 +57,7 @@ impl UsersRepository for UsersRepo {
             .map_err(|e| {
                 if let SdkError::ServiceError(service_error) = &e {
                     if service_error.err().is_conditional_check_failed_exception() {
-                        return MyError::Internal("User already exists".into());
+                        return MyError::Conflict("User already exists".into());
                     }
                 }
                 MyError::Database(format!("DynamoDB PutItem Error: {}", e))
@@ -75,10 +77,10 @@ impl UsersRepository for UsersRepo {
             .map_err(|e| {
                 if let SdkError::ServiceError(service_error) = &e {
                     if service_error.err().is_conditional_check_failed_exception() {
-                        return MyError::Internal("User does not exist".into());
+                        return MyError::NotFound("User does not exist".into());
                     }
                 }
-                MyError::Internal(format!("DynamoDB DeleteItem Error: {}", e))
+                MyError::Database(format!("DynamoDB DeleteItem Error: {}", e))
             })?;
 
         Ok(())
