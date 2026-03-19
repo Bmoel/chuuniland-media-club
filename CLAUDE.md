@@ -30,10 +30,15 @@ npm run test:watch # Run tests in watch mode (vitest)
 ### Backend (`apps/media-club-api`)
 
 ```bash
-make db                  # Start DynamoDB Local in Docker
-make seed TABLE=<name>   # Seed a DynamoDB table from JSON
-make dev                 # Start local Lambda server (port 9000)
-make query URL=<path>    # cURL the running API
+make db                               # Start DynamoDB Local in Docker
+make seed                             # Seed all DynamoDB tables from JSON
+make seed TABLES="t1 t2"             # Seed specific tables only
+make start                            # Run db + seed + dev in sequence
+make dev                              # Start local Lambda server (port 9000)
+make query URL=<path>                 # cURL the running API
+make sync-to-snapshot TABLE=<t> FILE=<f>  # Export DynamoDB table to JSON snapshot
+make favorites-sync-job               # Run the favorites sync Lambda locally
+make invoke-favorites-sync            # Invoke the local favorites sync job
 
 cargo lambda watch       # Hot-reload Lambda server
 cargo lambda build       # Build for ARM64
@@ -71,6 +76,10 @@ VITE_ANILIST_APP_REDIRECT_URI
 - **DynamoDB** via `aws-sdk-dynamodb` + `serde_dynamo`
 
 Layered architecture: Handlers → Services → Repositories → DynamoDB/AniList GraphQL API
+
+Two binaries:
+- `media-club-api` — the main Lambda "lambdalith" serving all HTTP routes
+- `favorites_job` — a scheduled Lambda that syncs all user favorites from AniList to DynamoDB
 
 API routes:
 ```
