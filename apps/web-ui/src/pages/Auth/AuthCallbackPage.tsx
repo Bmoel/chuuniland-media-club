@@ -11,7 +11,7 @@ import {jwtDecode} from "jwt-decode";
 export type AuthMode = 'sync' | 'remove' | 'login';
 
 const isValidAuthMode = (mode: string | null): mode is AuthMode => {
-    return mode === 'sync' || mode === 'remove';
+    return mode === 'sync' || mode === 'remove' || mode === 'login';
 };
 
 function AuthCallbackPage() {
