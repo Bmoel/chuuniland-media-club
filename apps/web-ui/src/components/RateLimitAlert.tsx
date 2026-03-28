@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Alert, Button, Typography } from "@mui/material";
 import type { AnilistRateLimitError } from "../api/anilist/anilistApi.types";
 import { Trans, useTranslation } from "react-i18next";
+import useCountdown from "../hooks/useCountdown";
 
 interface RateLimitAlertProps {
     error: AnilistRateLimitError;
@@ -10,15 +11,12 @@ interface RateLimitAlertProps {
 
 function RateLimitAlert({ error, onRetry }: RateLimitAlertProps) {
     const { t } = useTranslation();
-    const [secondsLeft, setSecondsLeft] = useState(error.retryAfterSeconds);
+    const secondsLeft = useCountdown(error.retryAfterSeconds);
 
     useEffect(() => {
-        if (secondsLeft <= 0) {
+        if (secondsLeft === 0) {
             onRetry();
-            return;
         }
-        const id = setTimeout(() => setSecondsLeft(s => s - 1), 1000);
-        return () => clearTimeout(id);
     }, [secondsLeft, onRetry]);
 
     return (

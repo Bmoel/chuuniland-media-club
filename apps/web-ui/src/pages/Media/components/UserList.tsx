@@ -90,7 +90,8 @@ function UserList(props: UserListInterface) {
                                 sx={{
                                     width: 56,
                                     height: 56,
-                                    border: selectedUser?.user.id === user?.user.id ? '2px solid #1976d2' : 'none',
+                                    border: selectedUser?.user.id === user?.user.id ? '2px solid' : 'none',
+                                    borderColor: 'primary.main',
                                     mx: "auto",
                                 }}
                             />
