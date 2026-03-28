@@ -7,6 +7,7 @@ pub struct GenericAuthPayload {
 
 #[derive(Debug, Serialize)]
 pub struct LoginResponse {
+    pub id: i32,
     pub access_token: String,
     pub name: String,
     pub avatar_url: String,

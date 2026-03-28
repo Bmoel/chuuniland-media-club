@@ -62,7 +62,7 @@ const mediaClubApi = baseApi.injectEndpoints({
         }),
         getLoginInfo: build.query<LoginResponse, AuthAnilistUserRequest>({
             query: ({ code }) => ({
-                url: `${BASE_URL}/auth/token`,
+                url: `${BASE_URL}/auth/login`,
                 method: 'POST',
                 body: { code },
             }),

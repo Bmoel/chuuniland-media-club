@@ -1,5 +1,5 @@
 use crate::models::app::AppState;
-use crate::routes::auth_routes::{auth_remove_route, auth_sync_route, auth_get_token};
+use crate::routes::auth_routes::{auth_remove_route, auth_sync_route, auth_get_login_info};
 use crate::routes::{
     common_routes::welcome_route,
     media_routes::media_route,
@@ -15,6 +15,6 @@ pub fn create_router(state: AppState) -> Router {
         .route("/users/{id}/favorites/{media_id}", get(users_favorites_get_route))
         .route("/auth/sync", post(auth_sync_route))
         .route("/auth/remove", post(auth_remove_route))
-        .route("/auth/token", post(auth_get_token))
+        .route("/auth/login", post(auth_get_login_info))
         .with_state(state)
 }

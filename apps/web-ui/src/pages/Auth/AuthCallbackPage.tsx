@@ -44,6 +44,7 @@ function AuthCallbackPage() {
             } else if (mode === 'login') {
                 const loginResponse = await fetchLoginInfo({ code }).unwrap();
                 dispatch(setAuth({
+                    id: loginResponse.id,
                     jwtToken: loginResponse.access_token,
                     avatarUrl: loginResponse.avatar_url,
                     name: loginResponse.name,

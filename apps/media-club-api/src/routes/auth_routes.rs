@@ -28,7 +28,7 @@ pub async fn auth_remove_route(
     }))
 }
 
-pub async fn auth_get_token(
+pub async fn auth_get_login_info(
     State(state): State<AppState>,
     Json(payload): Json<GenericAuthPayload>,
 ) -> Result<Json<ApiResponse<LoginResponse>>, MyError> {
@@ -38,6 +38,7 @@ pub async fn auth_get_token(
     Ok(Json(ApiResponse {
         success: true,
         data: Some(LoginResponse {
+            id: user_info.id,
             access_token: token,
             avatar_url: user_info.avatar.medium,
             name: user_info.name,
