@@ -2,12 +2,13 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import {
-    useLazyGetAccessTokenQuery,
+    useLazyGetLoginInfoQuery,
     useRemoveAnilistUserMutation,
     useSyncAnilistUserMutation
 } from "../../api/mediaClub/mediaClubApi";
 import { useTranslation } from "react-i18next";
-import {jwtDecode} from "jwt-decode";
+import {useDispatch} from "react-redux";
+import {setAuth} from "../../slices/AuthSlice";
 export type AuthMode = 'sync' | 'remove' | 'login';
 
 const isValidAuthMode = (mode: string | null): mode is AuthMode => {
@@ -17,6 +18,7 @@ const isValidAuthMode = (mode: string | null): mode is AuthMode => {
 function AuthCallbackPage() {
     const [loadingText, setLoadingText] = useState<string>('');
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const lastCallKey = useRef<string>("");
@@ -29,7 +31,7 @@ function AuthCallbackPage() {
 
     const [syncUser] = useSyncAnilistUserMutation();
     const [removeUser] = useRemoveAnilistUserMutation();
-    const [fetchAccessToken] = useLazyGetAccessTokenQuery();
+    const [fetchLoginInfo] = useLazyGetLoginInfoQuery();
 
     const handleAuth = useCallback(async (code: string, mode: AuthMode) => {
         try {
@@ -40,11 +42,12 @@ function AuthCallbackPage() {
                 await syncUser({ code }).unwrap();
                 setLoadingText(t('auth.synced_success'));
             } else if (mode === 'login') {
-                const token = await fetchAccessToken({ code }).unwrap();
-                const decodedToken = jwtDecode(token);
-                const expiration = decodedToken.exp ?? 180;
-                //TODO: Do something with token and expiration. Whether storing in browser memory or backend implementation
-                console.log(expiration);
+                const loginResponse = await fetchLoginInfo({ code }).unwrap();
+                dispatch(setAuth({
+                    jwtToken: loginResponse.access_token,
+                    avatarUrl: loginResponse.avatar_url,
+                    name: loginResponse.name,
+                }));
                 setLoadingText(t('auth.login_success'));
             }
         } catch {
@@ -53,7 +56,7 @@ function AuthCallbackPage() {
             sessionStorage.removeItem('oauth_state');
             setTimeout(() => navigate('/'), 1500);
         }
-    }, [removeUser, t, syncUser, fetchAccessToken, navigate]);
+    }, [removeUser, t, syncUser, fetchLoginInfo, navigate, dispatch]);
 
     useEffect(() => {
         if (redirectTimeout.current) {

@@ -1,4 +1,4 @@
-use crate::models::auth::{TokenResponse, ViewerResponse};
+use crate::models::auth::{TokenResponse, ViewerIdResponse, ViewerInfo, ViewerResponse};
 use crate::models::constants::anilist_constants::{ANILIST_AUTH_URL, ANILIST_GRAPHQL_URL};
 use crate::{errors::MyError, models::app::AppState};
 
@@ -22,7 +22,7 @@ pub async fn exchange_code_for_token(state: &AppState, auth_code: &str) -> Resul
 pub async fn get_anilist_user_id(state: &AppState, token: &str) -> Result<i32, MyError> {
     let query = "query { Viewer { id } }";
 
-    let response: ViewerResponse = state
+    let response: ViewerIdResponse = state
         .anilist_client
         .post_graphql(
             ANILIST_GRAPHQL_URL,
@@ -33,4 +33,20 @@ pub async fn get_anilist_user_id(state: &AppState, token: &str) -> Result<i32, M
         .await?;
 
     Ok(response.data.viewer.id)
+}
+
+pub async fn get_anilist_user_data(state: &AppState, token: &str) -> Result<ViewerInfo, MyError> {
+    let query = "query { Viewer { id avatar { medium } name } }";
+
+    let response: ViewerResponse = state
+        .anilist_client
+        .post_graphql(
+            ANILIST_GRAPHQL_URL,
+            query,
+            serde_json::json!({}),
+            Some(token),
+        )
+        .await?;
+
+    Ok(response.data.viewer)
 }

@@ -37,7 +37,8 @@
     "invalid_session": "Invalid session, please try again...",
     "auth_error": "Authentication error, redirecting...",
     "removing": "Removing your AniList profile...",
-    "syncing": "Syncing your AniList profile..."
+    "syncing": "Syncing your AniList profile...",
+    "login": "Login"
   },
   "registration": {
     "hero_title": "JOIN THE CLUB",

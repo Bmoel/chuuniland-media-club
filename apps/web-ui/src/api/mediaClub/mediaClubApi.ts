@@ -1,6 +1,6 @@
 import { baseApi } from "../baseApi";
 import { MEDIA_CLUB_MEDIA_TAG, MEDIA_CLUB_USERS_TAG, MEDIA_CLUB_FAVORITES_TAG } from "./mediaClubApi.tags";
-import type { MediaClubMediaResponse, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser, UserFavorites, UserFavoritesResponse } from "./mediaClubApi.types";
+import type { MediaClubMediaResponse, AuthAnilistUserRequest, MediaClubUsersResponse, MediaClubUser, UserFavorites, UserFavoritesResponse, LoginResponse, LoginResponseWrapper } from "./mediaClubApi.types";
 
 const BASE_URL = import.meta.env.VITE_MEDIA_CLUB_API_BASE_URL;
 
@@ -60,12 +60,15 @@ const mediaClubApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: () => [MEDIA_CLUB_USERS_TAG],
         }),
-        getAccessToken: build.query<string, unknown>({
+        getLoginInfo: build.query<LoginResponse, AuthAnilistUserRequest>({
             query: ({ code }) => ({
                 url: `${BASE_URL}/auth/token`,
                 method: 'POST',
                 body: { code },
-            })
+            }),
+            transformResponse: (response: LoginResponseWrapper) => {
+                return response.data!;
+            },
         }),
     }),
 });
@@ -76,5 +79,5 @@ export const {
     useGetUserFavoritesQuery,
     useSyncAnilistUserMutation,
     useRemoveAnilistUserMutation,
-    useLazyGetAccessTokenQuery,
+    useLazyGetLoginInfoQuery,
 } = mediaClubApi;
