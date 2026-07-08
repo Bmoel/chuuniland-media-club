@@ -124,20 +124,24 @@ function MediaPage() {
                                 </Typography>
                             </MediaMemberInfoStack>
                         </Grid>
-                        <Grid size={12}>
-                            {usersRateLimitError ? (
-                                <RateLimitAlert key={usersRateLimitError.retryAfterSeconds} error={usersRateLimitError} onRetry={refetchUsers} />
-                            ) : (
-                                <UserList
-                                    anilistUsers={anilistUsers}
-                                    selectedUser={selectedUser}
-                                    setSelectedUser={setSelectedUser}
-                                    dataIsLoading={isFetching}
-                                />
-                            )}
-                        </Grid>
-                        {(selectedUser !== undefined && media !== undefined) && (
-                            <SelectedUserInfo selectedUser={selectedUser} mediaId={media.id} />
+                        {media?.media_club_status === 'completed' && (
+                            <>
+                                <Grid size={12}>
+                                    {usersRateLimitError ? (
+                                        <RateLimitAlert key={usersRateLimitError.retryAfterSeconds} error={usersRateLimitError} onRetry={refetchUsers} />
+                                    ) : (
+                                        <UserList
+                                            anilistUsers={anilistUsers}
+                                            selectedUser={selectedUser}
+                                            setSelectedUser={setSelectedUser}
+                                            dataIsLoading={isFetching}
+                                        />
+                                    )}
+                                </Grid>
+                                {(selectedUser !== undefined && media !== undefined) && (
+                                    <SelectedUserInfo selectedUser={selectedUser} mediaId={media.id} />
+                                )}
+                            </>
                         )}
                     </Grid>
                 </Stack>
