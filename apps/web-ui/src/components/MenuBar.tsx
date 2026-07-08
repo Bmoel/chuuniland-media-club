@@ -73,45 +73,48 @@ export default function MenuBar() {
                 disableDiscovery
                 disableSwipeToOpen
             >
-                <List sx={listCss}>
+                <List sx={listCss} aria-label="Navigation Menu">
                     <ListItem>
                         <ListItemAvatar>
-                            <Avatar alt='chuuniland logo' src="/subaru.svg" />
+                            <Avatar alt="" src="/subaru.svg" />
                         </ListItemAvatar>
                         <ListItemText>
                             <Typography fontWeight="bold">{t('common.media_club')}</Typography>
                         </ListItemText>
                     </ListItem>
                     <Divider sx={{ mx: 1 }} />
-                    <ListItem
-                        onClick={() => navigateAway('/')}
-                        disablePadding
-                    >
-                        <ListItemButton>
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            component="button"
+                            onClick={() => navigateAway('/')}
+                        >
                             <ListItemIcon>
-                                <Home color='info' />
+                                <Home color='info' aria-hidden="true" />
                             </ListItemIcon>
                             <ListItemText primary={t('common.home')} />
                         </ListItemButton>
                     </ListItem>
-                    <ListItem
-                        onClick={() => navigateAway('/stats')}
-                        disablePadding
-                    >
-                        <ListItemButton>
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            component="button"
+                            onClick={() => navigateAway('/stats')}
+                        >
                             <ListItemIcon>
-                                <BarChart color='success' />
+                                <BarChart color='success' aria-hidden="true" />
                             </ListItemIcon>
                             <ListItemText primary={t('nav.stats')} />
                         </ListItemButton>
                     </ListItem>
-                    <ListItem
-                        onClick={() => navigateAway('/registration')}
-                        disablePadding
-                    >
-                        <ListItemButton>
+
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            component="button"
+                            onClick={() => navigateAway('/registration')}
+                        >
                             <ListItemIcon>
-                                <AppRegistration color='warning' />
+                                <AppRegistration color='warning' aria-hidden="true" />
                             </ListItemIcon>
                             <ListItemText primary={t('nav.registration')} />
                         </ListItemButton>

@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
+import { Box, ButtonBase, CircularProgress, Container, IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Zoom } from "@mui/material";
 import { Info } from "@mui/icons-material";
 import useConfig from "../../hooks/useConfig";
 import MediaInfoDrawer from "./components/MediaInfoDrawer";
@@ -64,24 +64,47 @@ function HomePage() {
                         {mediaList?.filter(m => m.media_club_status !== 'watching').map(media => {
                             return (
                                 <ImageListItem key={media.id} className="element-slight-hover">
-                                    <img
-                                        src={media.coverImage.extraLarge}
-                                        style={{ borderRadius: '10px', cursor: 'pointer' }}
-                                        alt={`${getPreferredName(media.title)} cover image`}
+                                    <ButtonBase
+                                        focusRipple
                                         onClick={() => {
                                             if (isNaN(media.id)) {
                                                 return;
                                             }
                                             navigate(`/media/${media.id}`);
                                         }}
-                                    />
+                                        aria-label={`View details for ${getPreferredName(media.title)}`}
+                                        sx={{
+                                            display: 'block',
+                                            width: '100%',
+                                            height: '100%',
+                                            borderRadius: '10px',
+                                            overflow: 'hidden',
+                                            textAlign: 'left',
+                                            "&.Mui-focusVisible": {
+                                                outline: "3px solid",
+                                                outlineColor: "primary.main",
+                                                outlineOffset: "-3px",
+                                            }
+                                        }}
+                                    >
+                                        <img
+                                            src={media.coverImage.extraLarge}
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                                display: 'block'
+                                            }}
+                                            alt={`${getPreferredName(media.title)} cover image`}
+                                        />
+                                    </ButtonBase>
                                     <ImageListItemBar
                                         title={getPreferredName(media.title)}
                                         subtitle={typeof media.title.native === 'string' ? media.title.native : undefined}
                                         actionIcon={
                                             <IconButton
                                                 sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                                                aria-label={`An image for the anime "${getPreferredName(media.title)}"`}
+                                                aria-label={`View info for ${getPreferredName(media.title)}`}
                                                 onClick={() => setMediaInfoDrawer({
                                                     isOpen: true,
                                                     id: media.id,

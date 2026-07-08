@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack, Tooltip, Typography } from "@mui/material";
+import {Avatar, Box, ButtonBase, IconButton, Stack, Tooltip, Typography} from "@mui/material";
 import type { MediaAnilistUser } from "../../../api/anilist/anilistApi.types";
 import { useCallback, useMemo, type Dispatch, type SetStateAction } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,7 +59,13 @@ function UserList(props: UserListInterface) {
                     placement={isMobile ? 'bottom-end' : 'right-start'}
                     enterTouchDelay={0}
                 >
-                    <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary', cursor: 'help', mb: '-1px' }} />
+                    <IconButton
+                        size="small"
+                        aria-label={t('user_list.members_tooltip')}
+                        sx={{ p: 0.25 }}
+                    >
+                        <InfoOutlinedIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                    </IconButton>
                 </Tooltip>
             </Stack>
             {(sortedUsers === undefined || sortedUsers.length === 0) ? (
@@ -74,45 +80,55 @@ function UserList(props: UserListInterface) {
                 </Typography>
             ) : (
                 <UserListStack>
-                    {sortedUsers.map((user) => (
-                        <Box
+                    {sortedUsers.map((user) => {
+                        const isSelected = selectedUser?.user.id === user?.user.id;
+                        return (
+                            <ButtonBase
                             key={user.user.id}
-                            onClick={() => onUserSelection(user)}
-                            sx={{
-                                textAlign: 'center',
-                                cursor: 'pointer',
-                                opacity: selectedUser?.user.id === user?.user.id ? 1 : 0.5,
-                                transition: '0.2s'
-                            }}
-                        >
-                            <Avatar
-                                src={user?.user.avatar.medium}
+                                onClick={() => onUserSelection(user)}
+                                aria-pressed={isSelected}
+                                aria-label={user?.user.name}
                                 sx={{
-                                    width: 56,
-                                    height: 56,
-                                    border: selectedUser?.user.id === user?.user.id ? '2px solid' : 'none',
-                                    borderColor: 'primary.main',
-                                    mx: "auto",
+                                    textAlign: 'center',
+                                    display: 'block',
+                                    borderRadius: 1,
+                                    opacity: isSelected ? 1 : 0.5,
+                                    transition: '0.2s',
+                                    "&.Mui-focusVisible": {
+                                        outline: "3px solid",
+                                        outlineColor: "primary.main",
+                                        outlineOffset: "-3px",
+                                    }
                                 }}
-                            />
-                            <Tooltip title={user?.user.name} enterDelay={500} enterTouchDelay={0} arrow>
-                                <Typography
-                                    noWrap
-                                    variant="caption"
-                                    display="block"
+                            >
+                                <Avatar
+                                    src={user?.user.avatar.medium}
                                     sx={{
-                                        maxWidth: '66px',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                        mt: 0.5,
+                                        width: 56,
+                                        height: 56,
+                                        border: isSelected ? '2px solid #1976d2' : 'none',
+                                        mx: "auto",
                                     }}
-                                >
-                                    {user?.user.name}
-                                </Typography>
-                            </Tooltip>
-                        </Box>
-                    ))}
+                                />
+                                <Tooltip title={user?.user.name} enterDelay={500} enterTouchDelay={0} arrow>
+                                    <Typography
+                                        noWrap
+                                        variant="caption"
+                                        display="block"
+                                        sx={{
+                                            maxWidth: '66px',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            mt: 0.5,
+                                        }}
+                                    >
+                                        {user?.user.name}
+                                    </Typography>
+                                </Tooltip>
+                            </ButtonBase>
+                        );
+                    })}
                 </UserListStack>
             )
             }
