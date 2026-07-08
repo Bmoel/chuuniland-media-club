@@ -1,4 +1,4 @@
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, ButtonBase, Chip, Typography } from "@mui/material";
 import { useNavigate } from "react-router";
 import type { Media } from "../../../types/media.types";
 import usePreferredMediaName from "../../../hooks/usePreferredMediaName";
@@ -17,8 +17,9 @@ function CurrentlyWatchingBanner({ media }: Props) {
     const label = media.type === "MANGA" ? t('banner.currently_reading') : t('banner.currently_watching');
 
     return (
-        <Box
+        <ButtonBase
             onClick={() => navigate(`/media/${media.id}`)}
+            focusRipple
             sx={{
                 position: "relative",
                 width: "100%",
@@ -26,10 +27,15 @@ function CurrentlyWatchingBanner({ media }: Props) {
                 borderRadius: 2,
                 overflow: "hidden",
                 cursor: "pointer",
-                mb: 3,
+                mb: 1,
                 "&:hover .banner-overlay": {
                     opacity: 0.55,
                 },
+                "&.Mui-focusVisible": {
+                    outline: "3px solid",
+                    outlineColor: "primary.main",
+                    outlineOffset: "2px",
+                }
             }}
         >
             {/* Background image */}
@@ -61,6 +67,7 @@ function CurrentlyWatchingBanner({ media }: Props) {
             <Box
                 sx={{
                     position: "absolute",
+                    textAlign: "left",
                     bottom: 0,
                     left: 0,
                     p: { xs: 1.5, sm: 2.5 },
@@ -90,7 +97,7 @@ function CurrentlyWatchingBanner({ media }: Props) {
                     {getPreferredName(media.title)}
                 </Typography>
             </Box>
-        </Box>
+        </ButtonBase>
     );
 }
 

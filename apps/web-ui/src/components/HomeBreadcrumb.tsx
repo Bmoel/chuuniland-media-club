@@ -9,6 +9,7 @@ function HomeBreadcrumb() {
 
     return (
         <Link
+            component="button"
             onClick={() => navigate('/')}
             sx={{ display: 'flex', alignItems: 'center', cursor: "pointer" }}
             underline="hover"
