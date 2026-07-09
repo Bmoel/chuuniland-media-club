@@ -1,8 +1,11 @@
-import { AppBar, Avatar, Box, Chip, Divider, IconButton, List, Link, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, type SxProps, type Theme, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, Chip, Divider, IconButton, List, Link, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, SwipeableDrawer, type SxProps, type Theme, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useCallback, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import useConfig from '../hooks/useConfig';
-import { AppRegistration, Home, GitHub, BarChart } from '@mui/icons-material';
+import useAnilistRedirect from '../hooks/useAnilistRedirect';
+import { selectAvatarUrl, selectIsAuthenticated } from '../slices/AuthSlice';
+import { AppRegistration, Home, GitHub, BarChart, Login } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +15,9 @@ export default function MenuBar() {
     const { isMobile, screenWidth } = useConfig();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const avatarUrl = useSelector(selectAvatarUrl);
+    const handleRedirect = useAnilistRedirect();
 
     const listCss: SxProps<Theme> = useMemo(() => {
         if (isMobile) {
@@ -43,6 +49,18 @@ export default function MenuBar() {
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             {t('common.media_club')}
                         </Typography>
+                        {isAuthenticated ? (
+                            <Avatar src={avatarUrl} sx={{ width: 36, height: 36 }} />
+                        ) : (
+                            <Button
+                                color="inherit"
+                                startIcon={<Login />}
+                                onClick={() => handleRedirect('login')}
+                                sx={{ textTransform: 'none' }}
+                            >
+                                {t('auth.login')}
+                            </Button>
+                        )}
                     </Toolbar>
                 </AppBar>
                 <Toolbar />

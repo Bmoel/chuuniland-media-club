@@ -1,6 +1,6 @@
 import { Box, Breadcrumbs, CircularProgress, Container, Divider, Fade, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { BarChart, NavigateNext } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import {type SyntheticEvent, useEffect, useState} from "react";
 import { useTranslation } from "react-i18next";
 import HomeBreadcrumb from "../../components/HomeBreadcrumb";
 import RateLimitAlert from "../../components/RateLimitAlert";
@@ -33,7 +33,7 @@ function StatsPage() {
     const [activeTab, setActiveTab] = useState<number>(0);
     const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
-    const handleTabChange = (_: unknown, newValue: number) => {
+    const handleTabChange = (_: SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
         setSelectedGenre(null);
     };
@@ -92,19 +92,12 @@ function StatsPage() {
 
                     <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
                         <Tabs value={activeTab} onChange={handleTabChange} sx={{ px: 1 }}>
-                            <Tab label={t('stats.anilist_rankings_tab')} />
                             <Tab label={t('stats.timeline_tab')} />
+                            <Tab label={t('stats.anilist_rankings_tab')} />
                         </Tabs>
                         <Divider />
-                        {activeTab === 0 && (
-                            <ScoreRankingsTab
-                                scoreRankings={scoreRankings}
-                                selectedGenre={selectedGenre}
-                            />
-                        )}
-                        {activeTab === 1 && (
-                            <ClubTimelineTab timeline={timeline} selectedGenre={selectedGenre} />
-                        )}
+                        {activeTab === 0 && <ClubTimelineTab timeline={timeline} selectedGenre={selectedGenre} />}
+                        {activeTab === 1 && <ScoreRankingsTab scoreRankings={scoreRankings} selectedGenre={selectedGenre} />}
                     </Paper>
                 </Stack>
             </Fade>

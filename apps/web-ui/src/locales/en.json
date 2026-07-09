@@ -32,12 +32,13 @@
   "auth": {
     "removed_success": "Successfully removed profile, redirecting...",
     "synced_success": "Successfully synced profile, redirecting...",
-    "remove_failed": "Failed to remove profile, redirecting...",
-    "sync_failed": "Failed to sync profile, redirecting...",
+    "login_success" : "Successfully logged in, redirecting...",
+    "failed": "Authentication failed, redirecting...",
     "invalid_session": "Invalid session, please try again...",
     "auth_error": "Authentication error, redirecting...",
     "removing": "Removing your AniList profile...",
-    "syncing": "Syncing your AniList profile..."
+    "syncing": "Syncing your AniList profile...",
+    "login": "Login"
   },
   "registration": {
     "hero_title": "JOIN THE CLUB",

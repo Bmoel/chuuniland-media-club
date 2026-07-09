@@ -1,29 +1,20 @@
 import { Alert, AlertTitle, Avatar, Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Link, Stack, Typography } from "@mui/material";
 import RegistrationPageBreadcrumbs from "./components/RegistrationPageBreadcrumbs";
-import { useCallback, useEffect, useState } from "react";
-import type { AuthMode } from "../Auth/AuthCallbackPage";
+import { useEffect, useState } from "react";
 import useConfig from "../../hooks/useConfig";
+import useAnilistRedirect from "../../hooks/useAnilistRedirect";
 import { Trans, useTranslation } from "react-i18next";
-
-const CLIENT_ID = import.meta.env.VITE_ANILIST_APP_CLIENT_ID;
-const REDIRECT_URI = import.meta.env.VITE_ANILIST_APP_REDIRECT_URI;
 
 function RegistrationPage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState<boolean>(false);
 
     const { isMobile } = useConfig();
     const { t } = useTranslation();
+    const handleRedirect = useAnilistRedirect();
 
     useEffect(() => {
         document.title = `${t('nav.registration')} | ${t('common.media_club')}`;
     }, [t]);
-
-    const handleRedirect = useCallback((mode: AuthMode) => {
-        const oauthState = crypto.randomUUID();
-        sessionStorage.setItem('oauth_state', oauthState);
-        const url = `https://anilist.co/api/v2/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&state=${mode}_${oauthState}`;
-        window.location.href = url;
-    }, []);
 
     return (
         <Container maxWidth="lg">

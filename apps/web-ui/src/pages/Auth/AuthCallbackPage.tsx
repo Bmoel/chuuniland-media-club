@@ -1,18 +1,24 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { useRemoveAnilistUserMutation, useSyncAnilistUserMutation } from "../../api/mediaClub/mediaClubApi";
+import {
+    useLazyGetLoginInfoQuery,
+    useRemoveAnilistUserMutation,
+    useSyncAnilistUserMutation
+} from "../../api/mediaClub/mediaClubApi";
 import { useTranslation } from "react-i18next";
-
-export type AuthMode = 'sync' | 'remove';
+import {useDispatch} from "react-redux";
+import {setAuth} from "../../slices/AuthSlice";
+export type AuthMode = 'sync' | 'remove' | 'login';
 
 const isValidAuthMode = (mode: string | null): mode is AuthMode => {
-    return mode === 'sync' || mode === 'remove';
+    return mode === 'sync' || mode === 'remove' || mode === 'login';
 };
 
 function AuthCallbackPage() {
     const [loadingText, setLoadingText] = useState<string>('');
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const lastCallKey = useRef<string>("");
@@ -25,23 +31,33 @@ function AuthCallbackPage() {
 
     const [syncUser] = useSyncAnilistUserMutation();
     const [removeUser] = useRemoveAnilistUserMutation();
+    const [fetchLoginInfo] = useLazyGetLoginInfoQuery();
 
     const handleAuth = useCallback(async (code: string, mode: AuthMode) => {
         try {
-            if (mode === "remove") {
+            if (mode === 'remove') {
                 await removeUser({ code }).unwrap();
                 setLoadingText(t('auth.removed_success'));
-            } else {
+            } else if (mode === 'sync') {
                 await syncUser({ code }).unwrap();
                 setLoadingText(t('auth.synced_success'));
+            } else if (mode === 'login') {
+                const loginResponse = await fetchLoginInfo({ code }).unwrap();
+                dispatch(setAuth({
+                    id: loginResponse.id,
+                    jwtToken: loginResponse.access_token,
+                    avatarUrl: loginResponse.avatar_url,
+                    name: loginResponse.name,
+                }));
+                setLoadingText(t('auth.login_success'));
             }
         } catch {
-            setLoadingText(mode === "remove" ? t('auth.remove_failed') : t('auth.sync_failed'));
+            setLoadingText(t('auth.failed'));
         } finally {
             sessionStorage.removeItem('oauth_state');
             setTimeout(() => navigate('/'), 1500);
         }
-    }, [removeUser, syncUser, navigate, t]);
+    }, [removeUser, t, syncUser, fetchLoginInfo, navigate, dispatch]);
 
     useEffect(() => {
         if (redirectTimeout.current) {
@@ -66,7 +82,7 @@ function AuthCallbackPage() {
         setLoadingText(mode === "remove" ? t('auth.removing') : t('auth.syncing'));
         if (lastCallKey.current !== currentCallKey) {
             lastCallKey.current = currentCallKey;
-            handleAuth(code, mode);
+            void handleAuth(code, mode);
         }
 
         return () => {
